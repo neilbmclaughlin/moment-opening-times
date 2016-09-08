@@ -1,0 +1,45 @@
+{
+  "name": "moment-opening-times",
+  "version": "0.0.1",
+  "description": "A small class to determine the status of a given moment in relation to a set of opening times",
+  "main": "OpeningTimes.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "moment": "^2.14.1",
+    "moment-timezone": "^0.5.4"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.2.2",
+    "eslint-config-airbnb": "^10.0.0",
+    "eslint-plugin-import": "^1.8.1",
+    "eslint-plugin-json": "^1.2.0",
+    "eslint-plugin-jsx-a11y": "^2.0.0",
+    "eslint-plugin-mocha": "^4.3.0",
+    "eslint-plugin-react": "^6.0.0",
+    "eslint-watch": "^2.1.11",
+    "istanbul": "^0.4.3",
+    "mocha": "^3.0.2"
+  },
+  "scripts": {
+    "test": "mocha",
+    "lint": "eslint --ext .js,.json .",
+    "coverage-report": "istanbul cover _mocha -- --recursive test",
+    "check-coverage": "istanbul check-coverage --config .istanbul.yml"
+  },
+  "keywords": [
+    "moment",
+    "opening",
+    "times"
+  ],
+  "author": "Neil McLaughlin & Steven Hunt",
+  "license": "MIT",
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run lint && npm run test",
+      "post-rewrite": "npm run lint && npm run test"
+    }
+  }
+}
