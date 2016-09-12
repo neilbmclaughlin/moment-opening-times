@@ -53,19 +53,22 @@ class OpeningTimes {
       }
     }
 
-    // console.log([date.format(), start.format(), end.format()]);
     return date.isBetween(start, end, null, '[]');
   }
 
+  isClosedAllDay(daysOpeningTimes) {
+    return (daysOpeningTimes.times.some( (t) => { return ( t === 'Closed')}));
+  }
+
   isOpen(date) {
-    // TODO: handle multiple opening times during a day (e.g. when closed for lunch
     const daysOpeningTimes = this.openingTimes[this.getDayName(date)];
-    return daysOpeningTimes.times[0] !== 'Closed' &&
-      this.timeInRange(
-      date,
-      daysOpeningTimes.times[0].fromTime,
-      daysOpeningTimes.times[0].toTime
-    );
+    if (this.isClosedAllDay(daysOpeningTimes)) {
+      return false;
+    } else {
+      return (daysOpeningTimes.times.some(
+        (t) => { return (this.timeInRange(date, t.fromTime, t.toTime))}
+      ));
+    };
   }
 
   capitalise(string) {
@@ -78,9 +81,10 @@ class OpeningTimes {
     do {
       dateTime.add(1, 'day');
       const day = dateTime.format('dddd').toLowerCase();
-      if (openingTimesForWeek[day].times[0] !== 'Closed') {
+      const daysOpeningTimes = openingTimesForWeek[day]; 
+      if (!this.isClosedAllDay(daysOpeningTimes)) {
         return this
-          .createDateTime(dateTime, openingTimesForWeek[day].times[0].fromTime);
+          .createDateTime(dateTime, daysOpeningTimes.times[0].fromTime);
       }
       dayCount++;
     } while (dayCount < 7);
@@ -92,8 +96,9 @@ class OpeningTimes {
     let dayCount = 0;
     do {
       const day = dateTime.format('dddd').toLowerCase();
+      const daysOpeningTimes = openingTimesForWeek[day]; 
       dateTime.add(1, 'day');
-      if (openingTimesForWeek[day].times[0] !== 'Closed') {
+      if (!this.isClosedAllDay(daysOpeningTimes)) {
         return this.createDateTime(dateTime, openingTimesForWeek[day].times[0].toTime);
       }
       dayCount++;
@@ -108,7 +113,7 @@ class OpeningTimes {
 
     const day = this.getDayName(dateTime);
 
-    if (this.openingTimes[day].times[0] === 'Closed') {
+    if (this.isClosedAllDay(this.openingTimes[day])) {
       return this.getNextOpeningTime(dateTime, this.openingTimes);
     }
 

@@ -21,7 +21,12 @@ describe('OpeningTimes', () => {
   const syndicationOpeningTimes = {
     monday: { times: [{ fromTime: '09:00', toTime: '17:30' }] },
     tuesday: { times: [{ fromTime: '09:00', toTime: '17:30' }] },
-    wednesday: { times: [{ fromTime: '09:00', toTime: '17:30' }] },
+    wednesday: { 
+      times: [
+        { fromTime: '09:00', toTime: '12:00' },
+        { fromTime: '13:00', toTime: '17:30' }
+      ] 
+    },
     thursday: { times: [{ fromTime: '09:00', toTime: '01:30' }] },
     friday: { times: [{ fromTime: '09:00', toTime: '17:30' }] },
     saturday: { times: ['Closed'] },
@@ -29,13 +34,69 @@ describe('OpeningTimes', () => {
   };
   const openingTimes = new OpeningTimes(syndicationOpeningTimes, 'Europe/London');
   describe('isOpen()', () => {
-    it('should return true if time is inside opening times', () => {
-      const date = getMoment('monday', 11, 30, 'Europe/London');
-      expect(openingTimes.isOpen(date)).to.equal(true);
+    describe('single session (9:00 - 17:30)', () => {
+      const openingTimesJson = {
+        monday: { 
+          times: [
+            { fromTime: '09:00', toTime: '17:30' }
+          ] 
+        },
+      };
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      it('should return true if time is inside opening times', () => {
+        const date = getMoment('monday', 11, 30, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(true);
+      });
+      it('should return false if time is outside opening times', () => {
+        const date = getMoment('monday', 18, 30, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(false);
+      });
     });
-    it('should return false if time is outside opening times', () => {
-      const date = getMoment('monday', 18, 30, 'Europe/London');
-      expect(openingTimes.isOpen(date)).to.equal(false);
+    describe('split sessions (9:00 - 12:30, 13:30 - 17:30)', () => {
+      const openingTimesJson = {
+        monday: { 
+          times: [
+            { fromTime: '09:00', toTime: '12:30' },
+            { fromTime: '13:30', toTime: '17:30' }
+          ] 
+        },
+      };
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      it('should return false is time is during lunchtime', () => {
+        const date = getMoment('monday', 13, 0, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(false);
+      });
+      it('should return true is time is during the morning session', () => {
+        const date = getMoment('monday', 10, 0, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(true);
+      });
+      it('should return true is time is during the afternoon session', () => {
+        const date = getMoment('monday', 14, 0, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(true);
+      });
+      it('should return false is time is after the afternoon session', () => {
+        const date = getMoment('monday', 18, 0, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(false);
+      });
+      it('should return false is time is before the morning session', () => {
+        const date = getMoment('monday', 8, 0, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(false);
+      });
+    });
+    describe('Closed', () => {
+      const openingTimesJson = {
+        monday: { 
+          times: [
+            { fromTime: '09:00', toTime: '12:30' },
+            'Closed'
+          ] 
+        },
+      };
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      it('Closed overrides all other session times', () => {
+        const date = getMoment('monday', 10, 0, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(false);
+      });
     });
     describe('with opening times in different time zones', () => {
       describe('Opening times - London 9:00 - 17:30', () => {
