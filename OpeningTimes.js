@@ -117,11 +117,21 @@ class OpeningTimes {
       return this.getNextOpeningTime(dateTime, this.openingTimes);
     }
 
-    const openingTime = this.createDateTime(dateTime, this.openingTimes[day].times[0].fromTime);
+    // find opening time today
+    let openingTime = this.openingTimes[day].times.filter(
+      (t) => { 
+        const ot = this.createDateTime(dateTime, t.fromTime);
+        return (dateTime < ot);
+      }
+    );
 
-    return ((dateTime < openingTime) ?
-      openingTime :
-      this.getNextOpeningTime(dateTime, this.openingTimes));
+    if (openingTime.length > 0) {
+      return this.createDateTime(dateTime, openingTime[0].fromTime);
+    }
+
+    openingTime = this.createDateTime(dateTime, this.openingTimes[day].times[0].fromTime);
+
+    return this.getNextOpeningTime(dateTime, this.openingTimes);
   }
 
   nextClosed(dateTime) {

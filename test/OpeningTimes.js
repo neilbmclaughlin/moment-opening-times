@@ -83,7 +83,7 @@ describe('OpeningTimes', () => {
         expect(openingTimes.isOpen(date)).to.equal(false);
       });
     });
-    describe('Closed', () => {
+    describe('closed', () => {
       const openingTimesJson = {
         monday: { 
           times: [
@@ -93,7 +93,7 @@ describe('OpeningTimes', () => {
         },
       };
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
-      it('Closed overrides all other session times', () => {
+      it('should override all other session times', () => {
         const date = getMoment('monday', 10, 0, 'Europe/London');
         expect(openingTimes.isOpen(date)).to.equal(false);
       });
@@ -119,7 +119,40 @@ describe('OpeningTimes', () => {
     });
   });
   describe('nextOpen()', () => {
-    it('when after days closing time should return following opening time', () => {
+    const openingTimesJson = {
+      monday: { 
+        times: [
+          { fromTime: '09:00', toTime: '12:30' },
+          { fromTime: '13:30', toTime: '17:30' }
+        ] 
+      },
+      tuesday: { 
+        times: [
+          { fromTime: '09:00', toTime: '12:30' },
+          { fromTime: '13:30', toTime: '17:30' }
+        ] 
+      },
+      friday: { 
+        times: [
+          { fromTime: '09:00', toTime: '12:30' },
+          { fromTime: '13:30', toTime: '17:30' }
+        ] 
+      },
+      saturday: { times: ['Closed'] },
+      sunday: { times: ['Closed'] },
+    };
+    const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+    it('when during lunchtime should return start of afternoon session', () => {
+      const date = getMoment('monday', 12, 40, 'Europe/London');
+      const expectedOpeningDateTime = getMoment('monday', 13, 30, 'Europe/London');
+      expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
+    });
+    it('when before days opening time should return following opening time', () => {
+      const date = getMoment('monday', 8, 30, 'Europe/London');
+      const expectedOpeningDateTime = getMoment('monday', 9, 0, 'Europe/London');
+      expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
+    });
+    it('when after days closing time should return following days opening time', () => {
       const date = getMoment('monday', 18, 30, 'Europe/London');
       const expectedOpeningDateTime = getMoment('tuesday', 9, 0, 'Europe/London');
       expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
@@ -133,7 +166,7 @@ describe('OpeningTimes', () => {
           .minutes(0);
       expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
     });
-    it('when currently open should return the passed date', () => {
+    it('when currently open should return the passed datetime', () => {
       const date = getMoment('monday', 11, 30, 'Europe/London');
       const expectedOpeningDateTime = moment(date);
       expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
