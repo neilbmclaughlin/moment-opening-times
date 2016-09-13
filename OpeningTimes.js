@@ -74,31 +74,33 @@ class OpeningTimes {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  getNextOpeningTime(startDateTime, openingTimesForWeek) {
-    const dateTime = moment(startDateTime);
+  getNextOpeningTimeForWeek(startDateTime, openingTimesForWeek) {
+    const dateTime = moment(startDateTime)
+      .set({ hour: 0, minute: 0, second: 0 });
+
     let dayCount = 0;
     do {
       dateTime.add(1, 'day');
       const day = dateTime.format('dddd').toLowerCase();
       const daysOpeningTimes = openingTimesForWeek[day];
       if (!this.isClosedAllDay(daysOpeningTimes)) {
-        return this
-          .createDateTime(dateTime, daysOpeningTimes.times[0].fromTime);
+        return this.getNextOpeningTimeForDay(dateTime);
       }
       dayCount++;
     } while (dayCount < 7);
     return undefined;
   }
 
-  getNextClosingTime(startDateTime, openingTimesForWeek) {
-    const dateTime = moment(startDateTime);
+  getNextClosingTimeForWeek(startDateTime, openingTimesForWeek) {
+    const dateTime = moment(startDateTime)
+      .set({ hour: 0, minute: 0, second: 0 });
     let dayCount = 0;
     do {
       const day = dateTime.format('dddd').toLowerCase();
       const daysOpeningTimes = openingTimesForWeek[day];
       dateTime.add(1, 'day');
       if (!this.isClosedAllDay(daysOpeningTimes)) {
-        return this.createDateTime(dateTime, openingTimesForWeek[day].times[0].toTime);
+        return this.getNextClosingTimeForDay(dateTime);
       }
       dayCount++;
     } while (dayCount < 7);
@@ -113,25 +115,45 @@ class OpeningTimes {
     const day = this.getDayName(dateTime);
 
     if (this.isClosedAllDay(this.openingTimes[day])) {
-      return this.getNextOpeningTime(dateTime, this.openingTimes);
+      return this.getNextOpeningTimeForWeek(dateTime, this.openingTimes);
     }
 
     return (
-      this.findNextStatusChange(dateTime, 'fromTime') ||
-      this.getNextOpeningTime(dateTime, this.openingTimes)
+      this.getNextOpeningTimeForDay(dateTime) ||
+      this.getNextOpeningTimeForWeek(dateTime, this.openingTimes)
     );
   }
 
-  findNextStatusChange(dateTime, timeType) {
+  getNextOpeningTimeForDay(dateTime) {
     const day = this.getDayName(dateTime);
 
-    const nextClosingTime = this.openingTimes[day].times.filter(
-        (t) => dateTime < this.createDateTime(dateTime, t[timeType])
+    const nextOpeningTime = this.openingTimes[day].times.map(
+      (t) => this.createDateTime(dateTime, t.fromTime)
+    ).filter(
+      (t) => dateTime < t
     )[0];
 
-    return (nextClosingTime ?
-      this.createDateTime(dateTime, nextClosingTime[timeType]) :
-      null);
+    return nextOpeningTime;
+  }
+
+  getNextClosingTimeForDay(dateTime) {
+    const day = this.getDayName(dateTime);
+
+    const nextClosingTime = this.openingTimes[day].times.map(
+        (t) => {
+          const fromTime = this.createDateTime(dateTime, t.fromTime);
+          const toTime = this.createDateTime(dateTime, t.toTime);
+          // Check if closing time is in the following day
+          if (toTime.isBefore(fromTime)) {
+            toTime.add(1, 'day');
+          }
+          return toTime;
+        }
+    ).filter(
+      (t) => dateTime < t
+    )[0];
+
+    return nextClosingTime;
   }
 
   nextClosed(dateTime) {
@@ -140,8 +162,8 @@ class OpeningTimes {
     }
 
     return (
-      this.findNextStatusChange(dateTime, 'toTime') ||
-      this.getNextClosingTime(dateTime, this.openingTimes
+      this.getNextClosingTimeForDay(dateTime) ||
+      this.getNextClosingTimeForWeek(dateTime, this.openingTimes
     ));
   }
 

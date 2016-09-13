@@ -283,20 +283,32 @@ describe('OpeningTimes', () => {
       const expectedClosingDateTime = moment(date);
       expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
     });
-    it('when opening hour span midnight (e.g. 17:00 - 01:30) should ???');
-    it('when closing time is after midnight should return tomorrows closing time', () => {
+    it('should handle closing time of midnight', () => {
       const openingTimesJson = {
         monday: {
           times: [
-            { fromTime: '09:00', toTime: '12:30' },
-            { fromTime: '13:30', toTime: '17:30' },
-            { fromTime: '18:30', toTime: '23:59' },
+            { fromTime: '09:00', toTime: '17:30' },
+            { fromTime: '18:30', toTime: '00:00' },
           ],
         },
       };
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 21, 30, 'Europe/London');
-      const expectedClosingDateTime = getMoment('monday', 23, 59, 'Europe/London');
+      const expectedClosingDateTime = getMoment('tuesday', 0, 0, 'Europe/London');
+      expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
+    });
+    it('should handle closing time of after midnight', () => {
+      const openingTimesJson = {
+        monday: {
+          times: [
+            { fromTime: '09:00', toTime: '17:30' },
+            { fromTime: '18:30', toTime: '01:00' },
+          ],
+        },
+      };
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      const date = getMoment('monday', 21, 30, 'Europe/London');
+      const expectedClosingDateTime = getMoment('tuesday', 1, 0, 'Europe/London');
       expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
     });
   });
