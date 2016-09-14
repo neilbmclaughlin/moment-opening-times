@@ -121,6 +121,20 @@ describe('OpeningTimes', () => {
     });
   });
   describe('nextOpen()', () => {
+    it('when closed all week should return undefined', () => {
+      const openingTimesJson = {
+        monday: { times: ['Closed'] },
+        tuesday: { times: ['Closed'] },
+        wednesday: { times: ['Closed'] },
+        thursday: { times: ['Closed'] },
+        friday: { times: ['Closed'] },
+        saturday: { times: ['Closed'] },
+        sunday: { times: ['Closed'] },
+      };
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      const date = getMoment('monday', 12, 40, 'Europe/London');
+      expect(openingTimes.nextOpen(date)).to.equal(undefined);
+    });
     it('when closed today should return start of tomorrows morning session', () => {
       const openingTimesJson = {
         monday: { times: ['Closed'] },
