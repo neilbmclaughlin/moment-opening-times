@@ -94,11 +94,12 @@ class OpeningTimes {
   getNextClosingTimeForWeek(startDateTime, openingTimesForWeek) {
     const dateTime = moment(startDateTime)
       .set({ hour: 0, minute: 0, second: 0 });
+
     let dayCount = 0;
     do {
+      dateTime.add(1, 'day');
       const day = dateTime.format('dddd').toLowerCase();
       const daysOpeningTimes = openingTimesForWeek[day];
-      dateTime.add(1, 'day');
       if (!this.isClosedAllDay(daysOpeningTimes)) {
         return this.getNextClosingTimeForDay(dateTime);
       }
