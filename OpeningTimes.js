@@ -42,15 +42,12 @@ class OpeningTimes {
     const openTime = this.getTimeFromString(open);
     const closeTime = this.getTimeFromString(close);
 
-    let start = this.getTime(date, openTime.hours, openTime.minutes);
+    const start = this.getTime(date, openTime.hours, openTime.minutes);
     let end = this.getTime(date, closeTime.hours, closeTime.minutes);
 
     if (end < start) {
-      if (date.isSameOrBefore(end)) {
-        start = start.subtract(1, 'day');
-      } else {
-        end = end.add(1, 'day');
-      }
+      // time spans midnight
+      end = end.add(1, 'day');
     }
 
     return date.isBetween(start, end, null, '[]');
@@ -70,10 +67,6 @@ class OpeningTimes {
     ));
   }
 
-  capitalise(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
   getNextOpeningTimeForWeek(startDateTime, openingTimesForWeek) {
     const dateTime = moment(startDateTime)
       .set({ hour: 0, minute: 0, second: 0 });
@@ -85,23 +78,6 @@ class OpeningTimes {
       const daysOpeningTimes = openingTimesForWeek[day];
       if (!this.isClosedAllDay(daysOpeningTimes)) {
         return this.getNextOpeningTimeForDay(dateTime);
-      }
-      dayCount++;
-    } while (dayCount < 7);
-    return undefined;
-  }
-
-  getNextClosingTimeForWeek(startDateTime, openingTimesForWeek) {
-    const dateTime = moment(startDateTime)
-      .set({ hour: 0, minute: 0, second: 0 });
-
-    let dayCount = 0;
-    do {
-      dateTime.add(1, 'day');
-      const day = dateTime.format('dddd').toLowerCase();
-      const daysOpeningTimes = openingTimesForWeek[day];
-      if (!this.isClosedAllDay(daysOpeningTimes)) {
-        return this.getNextClosingTimeForDay(dateTime);
       }
       dayCount++;
     } while (dayCount < 7);
@@ -162,17 +138,10 @@ class OpeningTimes {
       return dateTime;
     }
 
-    return (
-      this.getNextClosingTimeForDay(dateTime) ||
-      this.getNextClosingTimeForWeek(dateTime, this.openingTimes
-    ));
+    return this.getNextClosingTimeForDay(dateTime);
   }
 
   getOpeningHoursMessage(datetime) {
-    if (this.openingTimes === undefined) {
-      return 'Opening times not known';
-    }
-
     if (this.isOpen(datetime)) {
       const closedNext = this.nextClosed(datetime);
       const closedTime = closedNext.format('h:mm a');
@@ -191,22 +160,19 @@ class OpeningTimes {
         `Open until ${closedTime} ${closedDay}`);
     }
     const openNext = this.nextOpen(datetime);
-    if (openNext) {
-      const timeUntilOpen = openNext.diff(datetime, 'minutes');
-      const openDay = openNext.calendar(datetime, {
-        sameDay: '[today]',
-        nextDay: '[tomorrow]',
-        nextWeek: 'dddd',
-        lastDay: '[yesterday]',
-        lastWeek: '[last] dddd',
-        sameElse: 'DD/MM/YYYY',
-      });
-      return (
-        (timeUntilOpen <= 60) ?
-          `Opening in ${timeUntilOpen} minutes` :
-          `Closed until ${openNext.format('h:mm a')} ${openDay}`);
-    }
-    return 'Opening times not known';
+    const timeUntilOpen = openNext.diff(datetime, 'minutes');
+    const openDay = openNext.calendar(datetime, {
+      sameDay: '[today]',
+      nextDay: '[tomorrow]',
+      nextWeek: 'dddd',
+      lastDay: '[yesterday]',
+      lastWeek: '[last] dddd',
+      sameElse: 'DD/MM/YYYY',
+    });
+    return (
+      (timeUntilOpen <= 60) ?
+        `Opening in ${timeUntilOpen} minutes` :
+        `Closed until ${openNext.format('h:mm a')} ${openDay}`);
   }
 
   formatTime(timeString) {
