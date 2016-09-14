@@ -335,33 +335,6 @@ describe('OpeningTimes', () => {
           { fromTime: '18:30', toTime: '00:00' },
         ],
       },
-    };
-    const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
-    it('when currently open should return open message', () => {
-      const date = getMoment('monday', 13, 30, 'Europe/London');
-      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until 5:30 pm today');
-    });
-    it('when currently closed and opening tomorrow should return closed message', () => {
-      const date = getMoment('monday', 7, 0, 'Europe/London');
-      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Closed until 9:00 am today');
-    });
-    it('when currently closed and opening in 2 hours should return closed message', () => {
-      const date = getMoment('monday', 7, 0, 'Europe/London');
-      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Closed until 9:00 am today');
-    });
-    it('when currently closed and opening in 30 minutes should return closed message', () => {
-      const date = getMoment('monday', 8, 30, 'Europe/London');
-      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Opening in 30 minutes');
-    });
-  });
-  describe('formatOpeningTimes()', () => {
-    const openingTimesJson = {
-      monday: {
-        times: [
-          { fromTime: '09:00', toTime: '12:30' },
-          { fromTime: '13:30', toTime: '17:30' },
-        ],
-      },
       tuesday: {
         times: [
           { fromTime: '09:00', toTime: '12:30' },
@@ -374,33 +347,68 @@ describe('OpeningTimes', () => {
           { fromTime: '13:30', toTime: '17:30' },
         ],
       },
-      thursday: {
-        times: [
-          { fromTime: '09:00', toTime: '12:30' },
-          { fromTime: '13:30', toTime: '17:30' },
-        ],
-      },
-      friday: {
-        times: [
-          { fromTime: '09:00', toTime: '12:30' },
-          { fromTime: '13:30', toTime: '17:30' },
-        ],
-      },
-      saturday: {
-        times: [
-          { fromTime: '09:00', toTime: '12:30' },
-          { fromTime: '13:30', toTime: '17:30' },
-        ],
-      },
-      sunday: { times: ['Closed'] },
     };
+    const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+    it('when currently open should return open message', () => {
+      const date = getMoment('monday', 13, 30, 'Europe/London');
+      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until 5:30 pm today');
+    });
+    it('when currently open should return open message', () => {
+      const date = getMoment('monday', 19, 30, 'Europe/London');
+      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until midnight');
+    });
+    it('when currently closed and opening tomorrow should return closed message', () => {
+      const date = getMoment('tuesday', 18, 0, 'Europe/London');
+      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Closed until 9:00 am tomorrow');
+    });
+    it('when currently closed and opening in 2 hours should return closed message', () => {
+      const date = getMoment('monday', 7, 0, 'Europe/London');
+      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Closed until 9:00 am today');
+    });
+    it('when currently closed and opening in 30 minutes should return closed message', () => {
+      const date = getMoment('monday', 8, 30, 'Europe/London');
+      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Opening in 30 minutes');
+    });
+  });
+  describe('formatOpeningTimes()', () => {
     it('times should be returned as am/pm', () => {
+      const openingTimesJson = {
+        monday: {
+          times: [
+            { fromTime: '09:00', toTime: '12:30' },
+            { fromTime: '13:30', toTime: '17:30' },
+            { fromTime: '18:30', toTime: '00:00' },
+          ],
+        },
+        tuesday: { times: ['Closed'] },
+        wednesday: { times: ['Closed'] },
+        thursday: { times: ['Closed'] },
+        friday: { times: ['Closed'] },
+        saturday: { times: ['Closed'] },
+        sunday: { times: ['Closed'] },
+      };
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes();
       expect(formattedOpeningTimes.monday.times[0].fromTime).to.equal('9:00 am');
       expect(formattedOpeningTimes.monday.times[0].toTime).to.equal('12:30 pm');
       expect(formattedOpeningTimes.monday.times[1].fromTime).to.equal('1:30 pm');
       expect(formattedOpeningTimes.monday.times[1].toTime).to.equal('5:30 pm');
+      expect(formattedOpeningTimes.monday.times[2].fromTime).to.equal('6:30 pm');
+      expect(formattedOpeningTimes.monday.times[2].toTime).to.equal('midnight');
+    });
+    it('should handle closed all week', () => {
+      const openingTimesJson = {
+        monday: { times: ['Closed'] },
+        tuesday: { times: ['Closed'] },
+        wednesday: { times: ['Closed'] },
+        thursday: { times: ['Closed'] },
+        friday: { times: ['Closed'] },
+        saturday: { times: ['Closed'] },
+        sunday: { times: ['Closed'] },
+      };
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes();
+      expect(formattedOpeningTimes.monday.times[0]).to.equal('Closed');
     });
   });
 });
