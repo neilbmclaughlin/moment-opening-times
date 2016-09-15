@@ -71,17 +71,21 @@ class OpeningTimes {
     const dateTime = moment(startDateTime)
       .set({ hour: 0, minute: 0, second: 0 });
 
-    let dayCount = 0;
-    do {
-      dateTime.add(1, 'day');
-      const day = dateTime.format('dddd').toLowerCase();
-      const daysOpeningTimes = openingTimesForWeek[day];
-      if (!this.isClosedAllDay(daysOpeningTimes)) {
-        return this.getNextOpeningTimeForDay(dateTime);
-      }
-      dayCount++;
-    } while (dayCount < 7);
-    return undefined;
+    const nextOpeningTime =
+      [1, 2, 3, 4, 5, 6, 7]
+        .filter((d) => {
+          // Remove unknown and closed days
+          const date = moment(dateTime).add(d, 'day');
+          const day = date.format('dddd').toLowerCase();
+          const daysOpeningTimes = openingTimesForWeek[day];
+          return daysOpeningTimes && !this.isClosedAllDay(daysOpeningTimes);
+        })
+        .map((d) => {
+          const date = moment(dateTime).add(d, 'day');
+          return this.getNextOpeningTimeForDay(date);
+        })[0];
+
+    return nextOpeningTime;
   }
 
   nextOpen(dateTime) {
@@ -104,11 +108,9 @@ class OpeningTimes {
   getNextOpeningTimeForDay(dateTime) {
     const day = this.getDayName(dateTime);
 
-    const nextOpeningTime = this.openingTimes[day].times.map(
-      (t) => this.createDateTime(dateTime, t.fromTime)
-    ).filter(
-      (t) => dateTime < t
-    )[0];
+    const nextOpeningTime = this.openingTimes[day].times
+      .map((t) => this.createDateTime(dateTime, t.fromTime))
+      .filter((t) => dateTime < t)[0];
 
     return nextOpeningTime;
   }
@@ -116,19 +118,17 @@ class OpeningTimes {
   getNextClosingTimeForDay(dateTime) {
     const day = this.getDayName(dateTime);
 
-    const nextClosingTime = this.openingTimes[day].times.map(
-        (t) => {
-          const fromTime = this.createDateTime(dateTime, t.fromTime);
-          const toTime = this.createDateTime(dateTime, t.toTime);
-          // Check if closing time is in the following day
-          if (toTime.isBefore(fromTime)) {
-            toTime.add(1, 'day');
-          }
-          return toTime;
+    const nextClosingTime = this.openingTimes[day].times
+      .map((t) => {
+        const fromTime = this.createDateTime(dateTime, t.fromTime);
+        const toTime = this.createDateTime(dateTime, t.toTime);
+        // Check if closing time is in the following day
+        if (toTime.isBefore(fromTime)) {
+          toTime.add(1, 'day');
         }
-    ).filter(
-      (t) => dateTime < t
-    )[0];
+        return toTime;
+      })
+      .filter((t) => dateTime < t)[0];
 
     return nextClosingTime;
   }
