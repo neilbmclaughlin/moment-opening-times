@@ -5,8 +5,9 @@ const moment = require('moment');
 require('moment-timezone');
 
 class OpeningTimes {
-  constructor(openingTimes) {
+  constructor(openingTimes, timeZone) {
     this.openingTimes = openingTimes;
+    this.timeZone = timeZone;
   }
 
   getDayName(date) {
@@ -14,7 +15,7 @@ class OpeningTimes {
   }
 
   getTime(date, hour, minute) {
-    const returnDate = date.clone().tz('Europe/London');
+    const returnDate = date.clone().tz(this.timeZone);
     returnDate.set({
       hour,
       minute,
@@ -34,7 +35,7 @@ class OpeningTimes {
 
   createDateTime(dateTime, timeString) {
     const time = this.getTimeFromString(timeString);
-    return this.getTime(dateTime, time.hours, time.minutes).tz('Europe/London');
+    return this.getTime(dateTime, time.hours, time.minutes).tz(this.timeZone);
   }
 
   timeInRange(date, open, close) {
