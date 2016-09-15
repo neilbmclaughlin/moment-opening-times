@@ -53,19 +53,21 @@ class OpeningTimes {
       }
     }
 
-    // console.log([date.format(), start.format(), end.format()]);
     return date.isBetween(start, end, null, '[]');
   }
 
+  isClosedAllDay(daysOpeningTimes) {
+    return (daysOpeningTimes.times.some((t) => t === 'Closed'));
+  }
+
   isOpen(date) {
-    // TODO: handle multiple opening times during a day (e.g. when closed for lunch
     const daysOpeningTimes = this.openingTimes[this.getDayName(date)];
-    return daysOpeningTimes.times[0] !== 'Closed' &&
-      this.timeInRange(
-      date,
-      daysOpeningTimes.times[0].fromTime,
-      daysOpeningTimes.times[0].toTime
-    );
+    if (this.isClosedAllDay(daysOpeningTimes)) {
+      return false;
+    }
+    return (daysOpeningTimes.times.some(
+      (t) => this.timeInRange(date, t.fromTime, t.toTime)
+    ));
   }
 
   capitalise(string) {
@@ -78,9 +80,10 @@ class OpeningTimes {
     do {
       dateTime.add(1, 'day');
       const day = dateTime.format('dddd').toLowerCase();
-      if (openingTimesForWeek[day].times[0] !== 'Closed') {
+      const daysOpeningTimes = openingTimesForWeek[day];
+      if (!this.isClosedAllDay(daysOpeningTimes)) {
         return this
-          .createDateTime(dateTime, openingTimesForWeek[day].times[0].fromTime);
+          .createDateTime(dateTime, daysOpeningTimes.times[0].fromTime);
       }
       dayCount++;
     } while (dayCount < 7);
@@ -92,8 +95,9 @@ class OpeningTimes {
     let dayCount = 0;
     do {
       const day = dateTime.format('dddd').toLowerCase();
+      const daysOpeningTimes = openingTimesForWeek[day];
       dateTime.add(1, 'day');
-      if (openingTimesForWeek[day].times[0] !== 'Closed') {
+      if (!this.isClosedAllDay(daysOpeningTimes)) {
         return this.createDateTime(dateTime, openingTimesForWeek[day].times[0].toTime);
       }
       dayCount++;
@@ -108,26 +112,37 @@ class OpeningTimes {
 
     const day = this.getDayName(dateTime);
 
-    if (this.openingTimes[day].times[0] === 'Closed') {
+    if (this.isClosedAllDay(this.openingTimes[day])) {
       return this.getNextOpeningTime(dateTime, this.openingTimes);
     }
 
-    const openingTime = this.createDateTime(dateTime, this.openingTimes[day].times[0].fromTime);
+    return (
+      this.findNextStatusChange(dateTime, 'fromTime') ||
+      this.getNextOpeningTime(dateTime, this.openingTimes)
+    );
+  }
 
-    return ((dateTime < openingTime) ?
-      openingTime :
-      this.getNextOpeningTime(dateTime, this.openingTimes));
+  findNextStatusChange(dateTime, timeType) {
+    const day = this.getDayName(dateTime);
+
+    const nextClosingTime = this.openingTimes[day].times.filter(
+        (t) => dateTime < this.createDateTime(dateTime, t[timeType])
+    )[0];
+
+    return (nextClosingTime ?
+      this.createDateTime(dateTime, nextClosingTime[timeType]) :
+      null);
   }
 
   nextClosed(dateTime) {
     if (!this.isOpen(dateTime)) {
       return dateTime;
     }
-    const day = this.getDayName(dateTime);
-    const closingTime = this.createDateTime(dateTime, this.openingTimes[day].times[0].toTime);
-    return (dateTime < closingTime) ?
-      closingTime :
-      this.getNextClosingTime(dateTime, this.openingTimes);
+
+    return (
+      this.findNextStatusChange(dateTime, 'toTime') ||
+      this.getNextClosingTime(dateTime, this.openingTimes
+    ));
   }
 
   getOpeningHoursMessage(datetime) {
@@ -182,13 +197,22 @@ class OpeningTimes {
   }
 
   getFormattedOpeningTimes() {
-    const openingTimes = JSON.parse(JSON.stringify(this.openingTimes));
+    const openingTimes = {};
+
     daysOfTheWeek.forEach((day) => {
-      if (this.openingTimes && this.openingTimes[day].times[0] !== 'Closed') {
-        openingTimes[day].times[0].fromTime = this.formatTime(openingTimes[day].times[0].fromTime);
-        openingTimes[day].times[0].toTime = this.formatTime(openingTimes[day].times[0].toTime);
-      }
+      openingTimes[day] = {
+        times: this.openingTimes[day].times.map((t) => {
+          if (t === 'Closed') {
+            return 'Closed';
+          }
+          return {
+            fromTime: this.formatTime(t.fromTime),
+            toTime: this.formatTime(t.toTime),
+          };
+        }),
+      };
     });
+
     return openingTimes;
   }
 }
