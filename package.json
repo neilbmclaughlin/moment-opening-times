@@ -25,6 +25,7 @@
   },
   "scripts": {
     "test": "mocha",
+    "watch-test": "npm run test -- --watch --reporter min",
     "lint": "eslint --ext .js,.json .",
     "coverage-report": "istanbul cover _mocha -- --recursive test",
     "check-coverage": "istanbul check-coverage --config .istanbul.yml"
