@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "coveralls": "^2.11.12",
     "eslint": "^3.2.2",
     "eslint-config-airbnb": "^10.0.0",
     "eslint-plugin-import": "^1.8.1",
@@ -21,14 +22,16 @@
     "eslint-plugin-react": "^6.0.0",
     "eslint-watch": "^2.1.11",
     "istanbul": "^0.4.3",
-    "mocha": "^3.0.2"
+    "mocha": "^3.0.2",
+    "mocha-lcov-reporter": "^1.2.0"
   },
   "scripts": {
     "test": "mocha",
     "watch-test": "npm run test -- --watch --reporter min",
     "lint": "eslint --ext .js,.json .",
-    "coverage-report": "istanbul cover _mocha -- --recursive test",
-    "check-coverage": "istanbul check-coverage --config .istanbul.yml"
+    "generate-coverage": "istanbul cover _mocha -- --recursive test",
+    "check-coverage": "istanbul check-coverage --config .istanbul.yml",
+    "upload-coverage": "cat ./coverage/lcov.info | coveralls"
   },
   "keywords": [
     "moment",
