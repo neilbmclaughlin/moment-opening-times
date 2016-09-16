@@ -47,23 +47,23 @@ describe('OpeningTimes', () => {
         },
       };
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
-      it('should return false is time is during lunchtime', () => {
+      it('should return false if time is during lunchtime', () => {
         const date = getMoment('monday', 13, 0, 'Europe/London');
         expect(openingTimes.isOpen(date)).to.equal(false);
       });
-      it('should return true is time is during the morning session', () => {
+      it('should return true if time is during the morning session', () => {
         const date = getMoment('monday', 10, 0, 'Europe/London');
         expect(openingTimes.isOpen(date)).to.equal(true);
       });
-      it('should return true is time is during the afternoon session', () => {
+      it('should return true if time is during the afternoon session', () => {
         const date = getMoment('monday', 14, 0, 'Europe/London');
         expect(openingTimes.isOpen(date)).to.equal(true);
       });
-      it('should return false is time is after the afternoon session', () => {
+      it('should return false if time is after the afternoon session', () => {
         const date = getMoment('monday', 18, 0, 'Europe/London');
         expect(openingTimes.isOpen(date)).to.equal(false);
       });
-      it('should return false is time is before the morning session', () => {
+      it('should return false if time is before the morning session', () => {
         const date = getMoment('monday', 8, 0, 'Europe/London');
         expect(openingTimes.isOpen(date)).to.equal(false);
       });
@@ -353,7 +353,7 @@ describe('OpeningTimes', () => {
       const date = getMoment('monday', 13, 30, 'Europe/London');
       expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until 5:30 pm today');
     });
-    it('when currently open should return open message', () => {
+    it('when currently open and closing at 00:00 should return midnight message', () => {
       const date = getMoment('monday', 19, 30, 'Europe/London');
       expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until midnight');
     });
