@@ -18,6 +18,24 @@ function getMoment(day, hours, minutes, timeZone) {
 }
 
 describe('OpeningTimes', () => {
+  describe('constructor', () => {
+      it('should not throw for valid parameters', () => {
+        const openingTimesJson = {};
+        expect(() => { new OpeningTimes(openingTimesJson, 'Europe/London') }).to.not.throw();
+      });
+      it('should assert opening times parameter is not missing', () => {
+        const openingTimesJson = {};
+        expect(() => { new OpeningTimes() }).to.throw('AssertionError: parameter \'openingTimes\' undefined/empty');
+      });
+      it('should assert time zone parameter is not missing', () => {
+        const openingTimesJson = {};
+        expect(() => { new OpeningTimes(openingTimesJson) }).to.throw('AssertionError: parameter \'timeZone\' undefined/empty');
+      });
+      it('should assert time zone is parameter valid', () => {
+        const openingTimesJson = {};
+        expect(() => { new OpeningTimes(openingTimesJson, 'Blah/Blah') }).to.throw('AssertionError: parameter \'timeZone\' is not a valid TimeZone (Blah/Blah)');
+      });
+  });
   describe('isOpen()', () => {
     describe('single session (9:00 - 17:30)', () => {
       const openingTimesJson = {

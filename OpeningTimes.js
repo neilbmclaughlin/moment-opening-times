@@ -3,9 +3,15 @@ const daysOfTheWeek =
 
 const moment = require('moment');
 require('moment-timezone');
+const assert = require('assert');
 
 class OpeningTimes {
   constructor(openingTimes, timeZone) {
+    assert(openingTimes, 'parameter \'openingTimes\' undefined/empty');
+    assert(timeZone, 'parameter \'timeZone\' undefined/empty');
+    assert(timeZone, 'Missing TimeZone');
+    assert(moment.tz.zone(timeZone), `parameter \'timeZone\' is not a valid TimeZone (${timeZone})`);
+
     this.openingTimes = openingTimes;
     this.timeZone = timeZone;
   }
