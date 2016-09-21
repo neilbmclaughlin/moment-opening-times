@@ -1,8 +1,15 @@
 const moment = require('moment');
 require('moment-timezone');
+const assert = require('assert');
 
 class OpeningTimes {
   constructor(openingTimes, timeZone) {
+    assert(openingTimes, 'parameter \'openingTimes\' undefined/empty');
+    assert(timeZone, 'parameter \'timeZone\' undefined/empty');
+    assert(timeZone, 'Missing TimeZone');
+    assert(moment.tz.zone(timeZone),
+      `parameter \'timeZone\' is not a valid TimeZone (${timeZone})`);
+
     this.openingTimes = openingTimes;
     this.timeZone = timeZone;
   }
@@ -157,19 +164,23 @@ class OpeningTimes {
         `Open until ${closedTime} ${closedDay}`);
     }
     const openNext = this.nextOpen(datetime);
-    const timeUntilOpen = openNext.diff(datetime, 'minutes');
-    const openDay = openNext.calendar(datetime, {
-      sameDay: '[today]',
-      nextDay: '[tomorrow]',
-      nextWeek: 'dddd',
-      lastDay: '[yesterday]',
-      lastWeek: '[last] dddd',
-      sameElse: 'DD/MM/YYYY',
-    });
-    return (
-      (timeUntilOpen <= 60) ?
+
+    if (openNext) {
+      const timeUntilOpen = openNext.diff(datetime, 'minutes');
+      const openDay = openNext.calendar(datetime, {
+        sameDay: '[today]',
+        nextDay: '[tomorrow]',
+        nextWeek: 'dddd',
+        lastDay: '[yesterday]',
+        lastWeek: '[last] dddd',
+        sameElse: 'DD/MM/YYYY',
+      });
+      return (
+	(timeUntilOpen <= 60) ?
         `Opening in ${timeUntilOpen} minutes` :
         `Closed until ${openNext.format('h:mm a')} ${openDay}`);
+    }
+    return 'The next opening time is unknown.';
   }
 
   formatTime(timeString) {
