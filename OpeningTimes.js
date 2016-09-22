@@ -1,6 +1,3 @@
-const daysOfTheWeek =
-  ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
 const moment = require('moment');
 require('moment-timezone');
 const assert = require('assert');
@@ -199,7 +196,8 @@ class OpeningTimes {
   getFormattedOpeningTimes() {
     const openingTimes = {};
 
-    daysOfTheWeek.forEach((day) => {
+    moment.weekdays().forEach((d) => {
+      const day = d.toLowerCase();
       openingTimes[day] = {
         times: this.openingTimes[day].times.map((t) => {
           if (t === 'Closed') {
