@@ -367,6 +367,31 @@ describe('OpeningTimes', () => {
     });
   });
   describe('formatOpeningTimes()', () => {
+    it('times should be returned as two digit 24 hour', () => {
+      const openingTimesJson = {
+        monday: {
+          times: [
+            { fromTime: '09:00', toTime: '12:30' },
+            { fromTime: '13:30', toTime: '17:30' },
+            { fromTime: '18:30', toTime: '00:00' },
+          ],
+        },
+        tuesday: { times: ['Closed'] },
+        wednesday: { times: ['Closed'] },
+        thursday: { times: ['Closed'] },
+        friday: { times: ['Closed'] },
+        saturday: { times: ['Closed'] },
+        sunday: { times: ['Closed'] },
+      };
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes('HH:mm');
+      expect(formattedOpeningTimes.monday.times[0].fromTime).to.equal('09:00');
+      expect(formattedOpeningTimes.monday.times[0].toTime).to.equal('12:30');
+      expect(formattedOpeningTimes.monday.times[1].fromTime).to.equal('13:30');
+      expect(formattedOpeningTimes.monday.times[1].toTime).to.equal('17:30');
+      expect(formattedOpeningTimes.monday.times[2].fromTime).to.equal('18:30');
+      expect(formattedOpeningTimes.monday.times[2].toTime).to.equal('midnight');
+    });
     it('times should be returned as am/pm', () => {
       const openingTimesJson = {
         monday: {
