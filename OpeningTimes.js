@@ -183,17 +183,16 @@ class OpeningTimes {
     return 'The next opening time is unknown.';
   }
 
-  formatTime(timeString) {
+  formatTime(timeString, formatString = 'h:mm a') {
     const aDate = moment('2016-07-25T00:00:00+01:00');
-    const time = this.getTimeFromString(timeString);
-    const formattedTime = this.getTime(aDate, time.hours, time.minutes).format('h:mm a');
-    if (formattedTime === '12:00 am' || formattedTime === '11:59 pm') {
+    if (timeString === '00:00' || timeString === '23:59') {
       return 'midnight';
     }
-    return formattedTime;
+    const time = this.getTimeFromString(timeString);
+    return this.getTime(aDate, time.hours, time.minutes).format(formatString);
   }
 
-  getFormattedOpeningTimes() {
+  getFormattedOpeningTimes(formatString) {
     const openingTimes = {};
 
     moment.weekdays().forEach((d) => {
@@ -204,8 +203,8 @@ class OpeningTimes {
             return 'Closed';
           }
           return {
-            fromTime: this.formatTime(t.fromTime),
-            toTime: this.formatTime(t.toTime),
+            fromTime: this.formatTime(t.fromTime, formatString),
+            toTime: this.formatTime(t.toTime, formatString),
           };
         }),
       };
