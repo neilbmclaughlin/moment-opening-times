@@ -2,17 +2,16 @@ const chai = require('chai');
 const OpeningTimes = require('../OpeningTimes');
 const moment = require('moment');
 require('moment-timezone');
-// TODO: The DaysOfTheWeek list is duplicated in OpeningTimes.
-// We could probably use the moment day of week functionality to remove the need for this.
-const DaysOfTheWeek =
-  ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 const expect = chai.expect;
-const aMonday = moment('2016-07-25T00:00:00+00:00');
+const aSunday = moment('2016-07-24T00:00:00+00:00');
 
 function getMoment(day, hours, minutes, timeZone) {
-  const dayNumber = DaysOfTheWeek.indexOf(day);
-  const date = moment(aMonday).tz(timeZone);
+  const dayNumber = moment
+    .weekdays()
+    .map((d) => d.toLowerCase())
+    .indexOf(day);
+  const date = moment(aSunday).tz(timeZone);
   date.add(dayNumber, 'days').hours(hours).minutes(minutes);
   return date;
 }
