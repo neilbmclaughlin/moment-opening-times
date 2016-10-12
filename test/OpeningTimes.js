@@ -7,7 +7,10 @@ const expect = chai.expect;
 const aSunday = moment('2016-07-24T00:00:00+00:00');
 
 function getMoment(day, hours, minutes, timeZone) {
-  const dayNumber = moment.weekdays().map((d) => d.toLowerCase()).indexOf(day);
+  const dayNumber = moment
+    .weekdays()
+    .map((d) => d.toLowerCase())
+    .indexOf(day);
   const date = moment(aSunday).tz(timeZone);
   date.add(dayNumber, 'days').hours(hours).minutes(minutes);
   return date;
