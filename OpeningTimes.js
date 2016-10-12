@@ -51,7 +51,7 @@ class OpeningTimes {
   }
 
   isClosedAllDay(daysOpeningTimes) {
-    return (daysOpeningTimes.times.some((t) => t === 'Closed'));
+    return (daysOpeningTimes.length === 0);
   }
 
   isOpen(date) {
@@ -59,8 +59,8 @@ class OpeningTimes {
     if (this.isClosedAllDay(daysOpeningTimes)) {
       return false;
     }
-    return (daysOpeningTimes.times.some(
-      (t) => this.timeInRange(date, t.fromTime, t.toTime)
+    return (daysOpeningTimes.some(
+      (t) => this.timeInRange(date, t.opens, t.closes)
     ));
   }
 
@@ -105,8 +105,8 @@ class OpeningTimes {
   getNextOpeningTimeForDay(dateTime) {
     const day = this.getDayName(dateTime);
 
-    const nextOpeningTime = this.openingTimes[day].times
-      .map((t) => this.createDateTime(dateTime, t.fromTime))
+    const nextOpeningTime = this.openingTimes[day]
+      .map((t) => this.createDateTime(dateTime, t.opens))
       .filter((t) => dateTime < t)[0];
 
     return nextOpeningTime;
@@ -115,15 +115,15 @@ class OpeningTimes {
   getNextClosingTimeForDay(dateTime) {
     const day = this.getDayName(dateTime);
 
-    const nextClosingTime = this.openingTimes[day].times
+    const nextClosingTime = this.openingTimes[day]
       .map((t) => {
-        const fromTime = this.createDateTime(dateTime, t.fromTime);
-        const toTime = this.createDateTime(dateTime, t.toTime);
+        const opens = this.createDateTime(dateTime, t.opens);
+        const closes = this.createDateTime(dateTime, t.closes);
         // Check if closing time is in the following day
-        if (toTime.isBefore(fromTime)) {
-          toTime.add(1, 'day');
+        if (closes.isBefore(opens)) {
+          closes.add(1, 'day');
         }
-        return toTime;
+        return closes;
       })
       .filter((t) => dateTime < t)[0];
 
@@ -187,17 +187,12 @@ class OpeningTimes {
 
     moment.weekdays().forEach((d) => {
       const day = d.toLowerCase();
-      openingTimes[day] = {
-        times: this.openingTimes[day].times.map((t) => {
-          if (t === 'Closed') {
-            return 'Closed';
-          }
-          return {
-            fromTime: this.formatTime(t.fromTime),
-            toTime: this.formatTime(t.toTime),
-          };
-        }),
-      };
+      openingTimes[day] = this.openingTimes[day].map((t) =>
+        ({
+          opens: this.formatTime(t.opens),
+          closes: this.formatTime(t.closes),
+        })
+      );
     });
 
     return openingTimes;
