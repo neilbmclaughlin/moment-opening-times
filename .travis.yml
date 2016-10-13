@@ -1,9 +1,13 @@
 language: node_js
 node_js:
-  - "node"
+- node
 script:
-  - npm run lint .
-  - npm run test
-  - npm run generate-coverage
-  - npm run check-coverage
-  - npm run upload-coverage
+- npm run lint .
+- npm run test
+- npm run generate-coverage
+- npm run check-coverage
+- npm run upload-coverage
+notifications:
+  slack:
+    rooms:
+      secure: 0PjBzZxeFqXWjk903oQsuH22WVtHagx5M9aDwIskZ+guSO+Hcx/wNCNFNX7Humq80Gs8J7Fjjq4eVY0ya/WZ88kCQ0l2m4sK2ggaduS2LscdFM3PdZmZR5JJD4DLTQD8Td9+GY30KXikWgZ36qboMz+PTNkPPEwAqcfRfZT/iNBRqafX7g63uS1CsM7GYmfMiXfs/yIOdABAWlWvdFRHvycv32aXu5DTY+JK+7xdhdkBpHpO/3busQfxTBxlzYyFRiGrp2BA9mrrsEKO1NPh7IsU7Ur1NuWeFuFL/pO3o33eWBfX0sbmJYEew5hBtZkiEmP0h/L3Lcdj0RRekZuVuGgfSSOsCdfBWGaVzxx6QjRVzS+wRxPToZV3h2VxbUBtmdnHbmr3fPSGdJGzozNe43D6K4L14zCN5WLK6//gk6VlQMJRDiUo9MzGszOwYkuOO1oRc0qEaB19qK1PEA7jSzw7zPsk0Uey04MhSNJrcv3WWEjm994meKr3EmpbmN5w6HA0Qn6d6nnDjjkrulgJFhlly/P9iiSpFwHFJWZQN4Ir6GO5jOIc77352zBrY/bpgpTHSUQ+fOqmJIUzs7NP05q0xKVk995WnD4sdLk/BHQ8WmV7hERlhNd/9pxoBfPw3Zv1IGhaH/mg/tg5FOSmMdct9yhiR3HyuABM9ZMX1mM=
