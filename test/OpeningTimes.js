@@ -297,13 +297,25 @@ describe('OpeningTimes', () => {
     });
   });
   describe('formatOpeningTimes()', () => {
-    it('times should be returned as am/pm', () => {
-      const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
-      openingTimesJson.monday = [
-        { opens: '09:00', closes: '12:30' },
-        { opens: '13:30', closes: '17:30' },
-        { opens: '18:30', closes: '00:00' },
-      ];
+    it('when passed the format string \'HH:mm\' times should be returned in that format', () => {
+      const openingTimesJson = getRegularWorkingWeekWithCustomSession(
+      [{ opens: '09:00', closes: '12:30' },
+       { opens: '13:30', closes: '17:30' },
+       { opens: '18:30', closes: '00:00' }]);
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes('HH:mm');
+      expect(formattedOpeningTimes.monday[0].opens).to.equal('09:00');
+      expect(formattedOpeningTimes.monday[0].closes).to.equal('12:30');
+      expect(formattedOpeningTimes.monday[1].opens).to.equal('13:30');
+      expect(formattedOpeningTimes.monday[1].closes).to.equal('17:30');
+      expect(formattedOpeningTimes.monday[2].opens).to.equal('18:30');
+      expect(formattedOpeningTimes.monday[2].closes).to.equal('midnight');
+    });
+    it('by default times should be returned as am/pm', () => {
+      const openingTimesJson = getRegularWorkingWeekWithCustomSession(
+      [{ opens: '09:00', closes: '12:30' },
+       { opens: '13:30', closes: '17:30' },
+       { opens: '18:30', closes: '00:00' }]);
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes();
       expect(formattedOpeningTimes.monday[0].opens).to.equal('9:00 am');
