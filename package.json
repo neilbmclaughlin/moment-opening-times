@@ -2,6 +2,7 @@
   "name": "moment-opening-times",
   "version": "1.0.0",
   "description": "A small class to determine the status of a given moment in relation to a set of opening times",
+  "repository" : { "type": "git", "url": "https://github.com/nhsuk/moment-opening-times" },
   "main": "OpeningTimes.js",
   "directories": {
     "test": "test"
