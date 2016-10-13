@@ -16,102 +16,71 @@ function getMoment(day, hours, minutes, timeZone) {
   return date;
 }
 
+function getClosedDay() {
+  return [];
+}
+
+function getSingleSessionDay() {
+  return [{ opens: '09:00', closes: '17:30' }];
+}
+
+function getDoubleSessionDay() {
+  return [
+    { opens: '09:00', closes: '12:30' },
+    { opens: '13:30', closes: '17:30' },
+  ];
+}
+
+function getTripleSessionDay() {
+  return [
+    { opens: '09:00', closes: '12:30' },
+    { opens: '13:30', closes: '17:30' },
+    { opens: '18:30', closes: '22:30' },
+  ];
+}
+
+function setUpAllWeek(getTimes) {
+  const week = {};
+
+  moment.weekdays().forEach((d) => {
+    const day = d.toLowerCase();
+    week[day] = getTimes();
+  });
+
+  return week;
+}
+
 function getClosedAllWeek() {
-  /* eslint-disable quote-props, quotes, comma-dangle */
-  return {
-    "monday": [],
-    "tuesday": [],
-    "wednesday": [],
-    "thursday": [],
-    "friday": [],
-    "saturday": [],
-    "sunday": []
-  };
-  /* eslint-enable quote-props, quotes, comma-dangle */
+  return setUpAllWeek(getClosedDay);
 }
 
 function getRegularWorkingWeek() {
-  /* eslint-disable quote-props, quotes, comma-dangle */
-  return {
-    "monday": [{ "opens": "09:00", "closes": "17:30" }],
-    "tuesday": [{ "opens": "09:00", "closes": "17:30" }],
-    "wednesday": [{ "opens": "09:00", "closes": "17:30" }],
-    "thursday": [{ "opens": "09:00", "closes": "17:30" }],
-    "friday": [{ "opens": "09:00", "closes": "17:30" }],
-    "saturday": [{ "opens": "09:00", "closes": "17:30" }],
-    "sunday": []
-  };
-  /* eslint-enable quote-props, quotes, comma-dangle */
+  const week = setUpAllWeek(getSingleSessionDay);
+  week.sunday = getClosedDay();
+  return week;
 }
 
 function getRegularWorkingWeekWithLunchBreaks() {
-  /* eslint-disable quote-props, quotes, comma-dangle */
-  return {
-    "monday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-    ],
-    "tuesday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-    ],
-    "wednesday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-    ],
-    "thursday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-    ],
-    "friday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-    ],
-    "saturday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-    ],
-    "sunday": []
-  };
-  /* eslint-enable quote-props, quotes, comma-dangle */
+  const week = setUpAllWeek(getDoubleSessionDay);
+  week.sunday = getClosedDay();
+  return week;
 }
 
 function getRegularWorkingWeekWithLunchBreaksAndEveningSession() {
-  /* eslint-disable quote-props, quotes, comma-dangle */
-  return {
-    "monday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-      { "opens": "18:30", "closes": "22:30" }
-    ],
-    "tuesday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-      { "opens": "18:30", "closes": "22:30" }
-    ],
-    "wednesday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-      { "opens": "18:30", "closes": "22:30" }
-    ],
-    "thursday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-      { "opens": "18:30", "closes": "22:30" }
-    ],
-    "friday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-      { "opens": "18:30", "closes": "22:30" }
-    ],
-    "saturday": [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-      { "opens": "18:30", "closes": "22:30" }
-    ],
-    "sunday": []
-  };
-  /* eslint-enable quote-props, quotes, comma-dangle */
+  const week = setUpAllWeek(getTripleSessionDay);
+  week.sunday = getClosedDay();
+  return week;
+}
+
+function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function getRegularWorkingWeekWithCustomSession(session) {
+  const getCustomSession = () => (clone(session));
+  const week = setUpAllWeek(getCustomSession);
+  week.sunday = getClosedDay();
+  return week;
 }
 
 describe('OpeningTimes', () => {
@@ -270,34 +239,22 @@ describe('OpeningTimes', () => {
       expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
     });
     it('should handle closing time of midnight', () => {
-      /* eslint-disable quote-props, quotes, comma-dangle */
-      const openingTimesJson = {
-        "monday": [
-          {
-            "opens": "09:00",
-            "closes": "17:30"
-          },
-          {
-            "opens": "18:30",
-            "closes": "00:00"
-          }
-        ]
-      };
-      /* eslint-enable quote-props, quotes, comma-dangle */
+      const openingTimesJson = getRegularWorkingWeekWithCustomSession(
+        [
+          { opens: '09:00', closes: '17:30' },
+          { opens: '18:30', closes: '00:00' },
+        ]);
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 21, 30, 'Europe/London');
       const expectedClosingDateTime = getMoment('tuesday', 0, 0, 'Europe/London');
       expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
     });
     it('should handle closing time of after midnight', () => {
-      /* eslint-disable quote-props, quotes, comma-dangle */
-      const openingTimesJson = {
-        "monday": [
-          { "opens": "09:00", "closes": "17:30" },
-          { "opens": "18:30", "closes": "01:00" }
-        ]
-      };
-      /* eslint-enable quote-props, quotes, comma-dangle */
+      const openingTimesJson = getRegularWorkingWeekWithCustomSession(
+        [
+          { opens: '09:00', closes: '17:30' },
+          { opens: '18:30', closes: '01:00' },
+        ]);
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 21, 30, 'Europe/London');
       const expectedClosingDateTime = getMoment('tuesday', 1, 0, 'Europe/London');
@@ -305,46 +262,48 @@ describe('OpeningTimes', () => {
     });
   });
   describe('getOpeningHoursMessage()', () => {
-    const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
-    /* eslint-disable quote-props, quotes, comma-dangle */
-    openingTimesJson.monday = [
-      { "opens": "09:00", "closes": "12:30" },
-      { "opens": "13:30", "closes": "17:30" },
-      { "opens": "18:30", "closes": "00:00" }
-    ];
-    /* eslint-enable quote-props, quotes, comma-dangle */
-    const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
-    it('when currently open should return open message', () => {
-      const date = getMoment('monday', 13, 30, 'Europe/London');
-      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until 5:30 pm today');
+    describe('regular opening hours', () => {
+      const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      it('when currently closed and opening tomorrow should return closed message', () => {
+        const date = getMoment('tuesday', 18, 0, 'Europe/London');
+        expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Closed until 9:00 am tomorrow');
+      });
+      it('when currently closed and opening in 2 hours should return closed message', () => {
+        const date = getMoment('monday', 7, 0, 'Europe/London');
+        expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Closed until 9:00 am today');
+      });
+      it('when currently closed and opening in 30 minutes should return closed message', () => {
+        const date = getMoment('monday', 8, 30, 'Europe/London');
+        expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Opening in 30 minutes');
+      });
     });
-    it('when currently open and closing at 00:00 should return midnight message', () => {
-      const date = getMoment('monday', 19, 30, 'Europe/London');
-      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until midnight');
-    });
-    it('when currently closed and opening tomorrow should return closed message', () => {
-      const date = getMoment('tuesday', 18, 0, 'Europe/London');
-      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Closed until 9:00 am tomorrow');
-    });
-    it('when currently closed and opening in 2 hours should return closed message', () => {
-      const date = getMoment('monday', 7, 0, 'Europe/London');
-      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Closed until 9:00 am today');
-    });
-    it('when currently closed and opening in 30 minutes should return closed message', () => {
-      const date = getMoment('monday', 8, 30, 'Europe/London');
-      expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Opening in 30 minutes');
+    describe('midnight opening hours', () => {
+      const openingTimesJson = getRegularWorkingWeekWithCustomSession(
+        [
+          { opens: '09:00', closes: '12:30' },
+          { opens: '13:30', closes: '17:30' },
+          { opens: '18:30', closes: '00:00' },
+        ]);
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      it('when currently open should return open message', () => {
+        const date = getMoment('monday', 13, 30, 'Europe/London');
+        expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until 5:30 pm today');
+      });
+      it('when currently open and closing at 00:00 should return midnight message', () => {
+        const date = getMoment('monday', 19, 30, 'Europe/London');
+        expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until midnight');
+      });
     });
   });
   describe('formatOpeningTimes()', () => {
     it('times should be returned as am/pm', () => {
       const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
-      /* eslint-disable quote-props, quotes, comma-dangle */
       openingTimesJson.monday = [
-        { "opens": "09:00", "closes": "12:30" },
-        { "opens": "13:30", "closes": "17:30" },
-        { "opens": "18:30", "closes": "00:00" }
+        { opens: '09:00', closes: '12:30' },
+        { opens: '13:30', closes: '17:30' },
+        { opens: '18:30', closes: '00:00' },
       ];
-      /* eslint-enable quote-props, quotes, comma-dangle */
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes();
       expect(formattedOpeningTimes.monday[0].opens).to.equal('9:00 am');
