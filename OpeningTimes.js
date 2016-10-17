@@ -170,6 +170,9 @@ class OpeningTimes {
         `Open until ${closedTime} ${closedDay}`);
     }
     const openNext = this.nextOpen(datetime);
+    if (!openNext) {
+      return 'Call for opening times.';
+    }
     const timeUntilOpen = openNext.diff(datetime, 'minutes');
     const openDay = openNext.calendar(datetime, {
       sameDay: '[today]',
