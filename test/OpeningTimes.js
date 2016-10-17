@@ -295,6 +295,17 @@ describe('OpeningTimes', () => {
         expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until midnight');
       });
     });
+    describe('closed all week', () => {
+      const openingTimesJson = getClosedAllWeek();
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      const date = getMoment('monday', 19, 30, 'Europe/London');
+
+      it('should return a message asking to call for times', () => {
+        const message = openingTimes.getOpeningHoursMessage(date);
+
+        expect(message).to.be.equal('Call for opening times.');
+      });
+    });
   });
   describe('formatOpeningTimes()', () => {
     it('when passed the format string \'HH:mm\' times should be returned in that format', () => {
