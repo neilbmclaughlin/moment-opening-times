@@ -316,20 +316,16 @@ describe('OpeningTimes', () => {
         expect(openingTimes.getOpeningHoursMessage(date)).to.equal('Open until midnight');
       });
     });
-    it('when closed all week the should return unknown opening time message', () => {
-      const closedTimesJson = {
-        monday: { times: ['Closed'] },
-        tuesday: { times: ['Closed'] },
-        wednesday: { times: ['Closed'] },
-        thursday: { times: ['Closed'] },
-        friday: { times: ['Closed'] },
-        saturday: { times: ['Closed'] },
-        sunday: { times: ['Closed'] },
-      };
-      const date = getMoment('monday', 8, 30, 'Europe/London');
-      const closedTimes = new OpeningTimes(closedTimesJson, 'Europe/London');
-      expect(closedTimes.getOpeningHoursMessage(date))
-        .to.equal('The next opening time is unknown.');
+    describe('closed all week', () => {
+      const openingTimesJson = getClosedAllWeek();
+      const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+      const date = getMoment('monday', 19, 30, 'Europe/London');
+
+      it('should return a message asking to call for times', () => {
+        const message = openingTimes.getOpeningHoursMessage(date);
+
+        expect(message).to.be.equal('Call for opening times.');
+      });
     });
   });
   describe('formatOpeningTimes()', () => {
