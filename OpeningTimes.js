@@ -1,15 +1,23 @@
+const assert = require('assert');
+const util = require('util');
 const moment = require('moment');
 require('moment-timezone');
-const assert = require('assert');
+
+const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
 
 class OpeningTimes {
   constructor(openingTimes, timeZone) {
-    assert(openingTimes, 'parameter \'openingTimes\' undefined/empty');
-    assert(timeZone, 'parameter \'timeZone\' undefined/empty');
-    assert(timeZone, 'Missing TimeZone');
-    assert(moment.tz.zone(timeZone),
-      `parameter \'timeZone\' is not a valid TimeZone (${timeZone})`);
+    const parameterWeek = Object.keys(openingTimes).sort();
+    assert.deepEqual(
+      parameterWeek, weekdays.sort(),
+      `parameter 'openingTimes' should have all days of the week (${parameterWeek})`);
+    assert(
+      weekdays.every((d) => Array.isArray(openingTimes[d])),
+      'parameter \'openingTimes\' should define opening times for each day.' +
+      ` (${util.inspect(openingTimes)})`);
 
+    assert(timeZone, 'parameter \'timeZone\' undefined/empty');
+    assert(moment.tz.zone(timeZone), 'parameter \'timeZone\' not a valid timezone');
     this.openingTimes = openingTimes;
     this.timeZone = timeZone;
   }

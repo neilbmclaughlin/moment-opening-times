@@ -1,4 +1,5 @@
 const chai = require('chai');
+const AssertionError = require('assert').AssertionError;
 const OpeningTimes = require('../OpeningTimes');
 const moment = require('moment');
 require('moment-timezone');
@@ -85,25 +86,46 @@ function getRegularWorkingWeekWithCustomSession(session) {
 
 describe('OpeningTimes', () => {
   describe('constructor', () => {
-    it('should not throw for valid parameters', () => {
-      const openingTimesJson = {};
-      expect(() => new OpeningTimes(openingTimesJson, 'Europe/London')).to.not.throw();
+    /* eslint-disable no-new, max-len */
+    describe('should validate parameters', () => {
+      it('opening times should be defined', () => {
+        expect(() => { new OpeningTimes(); })
+          .to.throw(
+            AssertionError,
+            'parameter \'openingTimes\' undefined/empty');
+      });
+      it('opening times should cover all days of the week', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        delete openingTimesJson.monday;
+        expect(() => { new OpeningTimes(openingTimesJson); })
+          .to.throw(
+            AssertionError,
+            'parameter \'openingTimes\' should have all days of the week (friday,saturday,sunday,thursday,tuesday,wednesday)');
+      });
+      it('opening times should have opening times for each day of the week', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        openingTimesJson.monday = undefined;
+        expect(() => { new OpeningTimes(openingTimesJson); })
+          .to.throw(
+            AssertionError,
+            'parameter \'openingTimes\' should define opening times for each day. ({ sunday: [],\n  monday: undefined,\n  tuesday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  wednesday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  thursday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  friday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  saturday: [ { opens: \'09:00\', closes: \'17:30\' } ] })');
+      });
+      it('time zone should be defined', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        expect(() => { new OpeningTimes(openingTimesJson); })
+          .to.throw(
+            AssertionError,
+            'parameter \'timeZone\' undefined/empty');
+      });
+      it('time zone should be valid', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        expect(() => { new OpeningTimes(openingTimesJson, 'blah'); })
+          .to.throw(
+            AssertionError,
+            'parameter \'timeZone\' not a valid timezone');
+      });
     });
-    it('should assert opening times parameter is not missing', () => {
-      expect(() => new OpeningTimes())
-        .to.throw('AssertionError: parameter \'openingTimes\' undefined/empty');
-    });
-    it('should assert time zone parameter is not missing', () => {
-      const openingTimesJson = {};
-      expect(() => new OpeningTimes(openingTimesJson))
-        .to.throw('AssertionError: parameter \'timeZone\' undefined/empty');
-    });
-    it('should assert time zone is parameter valid', () => {
-      const openingTimesJson = {};
-      expect(() => new OpeningTimes(openingTimesJson, 'Blah/Blah'))
-        .to.throw('AssertionError: parameter \'timeZone\' is not a ' +
-                  'valid TimeZone (Blah/Blah)');
-    });
+    /* eslint-enable no-new, max-len */
   });
   describe('isOpen()', () => {
     describe('single session (9:00 - 17:30)', () => {
