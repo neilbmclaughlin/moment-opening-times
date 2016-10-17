@@ -7,6 +7,7 @@ const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
 
 class OpeningTimes {
   constructor(openingTimes, timeZone) {
+    assert(openingTimes, 'parameter \'openingTimes\' undefined/empty');
     const parameterWeek = Object.keys(openingTimes).sort();
     assert.deepEqual(
       parameterWeek, weekdays.sort(),
@@ -122,14 +123,13 @@ class OpeningTimes {
     return nextClosingTime;
   }
 
-  _formatTime(timeString) {
-    const aDate = moment('2016-07-25T00:00:00+01:00');
-    const time = this._getTimeFromString(timeString);
-    const formattedTime = this._getTime(aDate, time.hours, time.minutes).format('h:mm a');
-    if (formattedTime === '12:00 am' || formattedTime === '11:59 pm') {
+  _formatTime(timeString, formatString = 'h:mm a') {
+    if (timeString === '00:00' || timeString === '23:59') {
       return 'midnight';
     }
-    return formattedTime;
+    const aDate = moment('2016-07-25T00:00:00+01:00');
+    const time = this._getTimeFromString(timeString);
+    return this._getTime(aDate, time.hours, time.minutes).format(formatString);
   }
 
   /* Public API */
@@ -206,15 +206,15 @@ class OpeningTimes {
         `Closed until ${openNext.format('h:mm a')} ${openDay}`);
   }
 
-  getFormattedOpeningTimes() {
+  getFormattedOpeningTimes(formatString) {
     const openingTimes = {};
 
     moment.weekdays().forEach((d) => {
       const day = d.toLowerCase();
       openingTimes[day] = this.openingTimes[day].map((t) =>
         ({
-          opens: this._formatTime(t.opens),
-          closes: this._formatTime(t.closes),
+          opens: this._formatTime(t.opens, formatString),
+          closes: this._formatTime(t.closes, formatString),
         })
       );
     });
