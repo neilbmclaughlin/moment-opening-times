@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">NHS Choices - LloydsPharmacy - Overview</title>
+  <id>http://v1.syndication.nhschoices.nhs.uk/organisations/pharmacies/34617/overview</id>
+  <rights type="text">Ã‚Â© Crown Copyright 2009</rights>
+  <updated>2015-05-22T20:39:13+01:00</updated>
+  <category term="Overview" />
+  <logo>http://www.nhs.uk/nhscwebservices/documents/logo1.jpg</logo>
+  <author>
+    <name>NHS Choices</name>
+    <uri>http://www.nhs.uk</uri>
+    <email>
+      <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="611604031204131708020412210f091202090e080204124f0f09124f140a">[email protected]</a>
+      <script data-cfhash="f9e31" type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+    </email>
+  </author>
+  <link rel="self" type="application/xml" title="NHS Choices - LloydsPharmacy - Overview" href="http://v1.syndication.nhschoices.nhs.uk/organisations/pharmacies/34617/overview?apikey=bbccdd" />
+  <link rel="alternate" title="NHS Choices - LloydsPharmacy - Overview" href="http://www.nhs.uk/Services/pharmacies/Overview/DefaultView.aspx?id=12332" />
+  <tracking xmlns="http://syndication.nhschoices.nhs.uk/services">
+    <img style="border: 0; width: 1px; height: 1px;" alt="" src="http://statse.webtrendslive.com/dcss9yzisf9xjyg74mgbihg8p_8d2u/njs.gif?dcsuri=/organisations%2fpharmacies%2f34617%2foverview&amp;wt.js=no&amp;wt.cg_n=syndication" />
+  </tracking>
+  <complete xmlns="http://purl.org/syndication/history/1.0" />
+  <entry>
+    <id>http://v1.syndication.nhschoices.nhs.uk/organisations/pharmacies/34617/overview</id>
+    <title type="text">LloydsPharmacy - Overview</title>
+    <published>2015-05-22T20:39:13+01:00</published>
+    <updated>2015-05-22T20:39:13+01:00</updated>
+    <link rel="self" title="LloydsPharmacy - Overview" href="http://v1.syndication.nhschoices.nhs.uk/organisations/pharmacies/34617/overview?apikey=bbccdd" />
+    <link rel="alternate" title="LloydsPharmacy - Overview" href="http://www.nhs.uk/Services/pharmacies/Overview/DefaultView.aspx?id=12332" />
+    <content type="application/xml">
+      <s:overview xmlns:s="http://syndication.nhschoices.nhs.uk/services">
+        <s:name indexLetter="L">LloydsPharmacy</s:name>
+        <s:odsCode>FTK79</s:odsCode>
+        <s:parentOrganisation>
+          <s:name>North Yorkshire And Humber Area Team</s:name>
+          <s:uri>http://v1.syndication.nhschoices.nhs.uk/organisations/localareateams/463126?apikey=bbccdd</s:uri>
+        </s:parentOrganisation>
+        <s:address>
+          <s:addressLine>34 High Street</s:addressLine>
+          <s:addressLine>Knaresborough</s:addressLine>
+          <s:addressLine>North Yorkshire</s:addressLine>
+          <s:addressLine>Knaresborough</s:addressLine>
+          <s:addressLine>North Yorkshire</s:addressLine>
+          <s:postcode>HG5 0EQ</s:postcode>
+        </s:address>
+        <s:contact type="General">
+          <s:telephone>01423 865308</s:telephone>
+          <s:email>
+            <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="7a160a4c4c4e4a3a361615031e090a121b08171b1903541915540f11">[email protected]</a>
+            <script data-cfhash="f9e31" type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script>
+          </s:email>
+        </s:contact>
+        <s:website>http://www.lloydspharmacy.com</s:website>
+        <s:geographicCoordinates>
+          <s:longitude>-1.46577370166779</s:longitude>
+          <s:latitude>54.0081405639648</s:latitude>
+        </s:geographicCoordinates>
+        <s:openingTimes>
+          <s:timesSessionTypes>
+            <s:timesSessionType sessionType="general">
+              <s:daysOfWeek>
+                <s:dayOfWeek>
+                  <s:dayName>Sunday</s:dayName>
+                  <s:timesSessions>
+                    <s:timesSession>Closed</s:timesSession>
+                  </s:timesSessions>
+                </s:dayOfWeek>
+                <s:dayOfWeek>
+                  <s:dayName>Monday</s:dayName>
+                  <s:timesSessions>
+                    <s:timesSession>
+                      <s:fromTime>08:00</s:fromTime>
+                      <s:toTime>13:00</s:toTime>
+                    </s:timesSession>
+                    <s:timesSession>
+                      <s:fromTime>13:00</s:fromTime>
+                      <s:toTime>19:30</s:toTime>
+                    </s:timesSession>
+                  </s:timesSessions>
+                </s:dayOfWeek>
+                <s:dayOfWeek>
+                  <s:dayName>Tuesday</s:dayName>
+                  <s:timesSessions>
+                    <s:timesSession>
+                      <s:fromTime>09:00</s:fromTime>
+                      <s:toTime>17:30</s:toTime>
+                    </s:timesSession>
+                  </s:timesSessions>
+                </s:dayOfWeek>
+                <s:dayOfWeek>
+                  <s:dayName>Wednesday</s:dayName>
+                  <s:timesSessions>
+                    <s:timesSession>
+                      <s:fromTime>09:00</s:fromTime>
+                      <s:toTime>17:30</s:toTime>
+                    </s:timesSession>
+                  </s:timesSessions>
+                </s:dayOfWeek>
+                <s:dayOfWeek>
+                  <s:dayName>Thursday</s:dayName>
+                  <s:timesSessions>
+                    <s:timesSession>
+                      <s:fromTime>09:00</s:fromTime>
+                      <s:toTime>17:30</s:toTime>
+                    </s:timesSession>
+                  </s:timesSessions>
+                </s:dayOfWeek>
+                <s:dayOfWeek>
+                  <s:dayName>Friday</s:dayName>
+                  <s:timesSessions>
+                    <s:timesSession>
+                      <s:fromTime>08:00</s:fromTime>
+                      <s:toTime>13:00</s:toTime>
+                    </s:timesSession>
+                    <s:timesSession>
+                      <s:fromTime>13:00</s:fromTime>
+                      <s:toTime>18:00</s:toTime>
+                    </s:timesSession>
+                  </s:timesSessions>
+                </s:dayOfWeek>
+                <s:dayOfWeek>
+                  <s:dayName>Saturday</s:dayName>
+                  <s:timesSessions>
+                    <s:timesSession>
+                      <s:fromTime>09:00</s:fromTime>
+                      <s:toTime>17:30</s:toTime>
+                    </s:timesSession>
+                  </s:timesSessions>
+                </s:dayOfWeek>
+              </s:daysOfWeek>
+            </s:timesSessionType>
+          </s:timesSessionTypes>
+          <s:lastVerifiedOn>2010-11-12 04:53:03Z</s:lastVerifiedOn>
+        </s:openingTimes>
+        <s:overviewLastUpdated>2010-11-12 04:51:33Z</s:overviewLastUpdated>
+        <s:isEpsEnabled>true</s:isEpsEnabled>
+      </s:overview>
+    </content>
+  </entry>
+</feed>
