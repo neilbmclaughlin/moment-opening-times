@@ -28,8 +28,7 @@
     "mocha-lcov-reporter": "^1.2.0"
   },
   "scripts": {
-    "preinstall": "node bin/preinstall",
-    "test": "mocha --recursive test \"lib/parsers/*/test/*.js\"",
+    "test": "mocha",
     "watch-test": "npm run test -- --watch --reporter min",
     "lint": "eslint --ext .js,.json .",
     "generate-coverage": "istanbul cover _mocha -- --recursive test",
