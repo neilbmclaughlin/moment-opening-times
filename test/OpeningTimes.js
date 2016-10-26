@@ -164,76 +164,103 @@ describe('OpeningTimes', () => {
         expect(openingTimes.isOpen(date)).to.equal(false);
       });
     });
-    describe('opening times spanning midnight', () => {
+    describe('opening times spanning midnight (09:00 - 12:00. 13:00 - 01:00)', () => {
       it('should handle times after midnight but before closing', () => {
         const openingTimesJson = getRegularWorkingWeekWithCustomSession(
-        [{ opens: '09:00', closes: '12:00' },
-          { opens: '13:00', closes: '01:00' }]);
+          [{ opens: '09:00', closes: '12:00' },
+            { opens: '13:00', closes: '01:00' }]);
         const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
         const date = getMoment('tuesday', 0, 55, 'Europe/London');
         expect(openingTimes.isOpen(date)).to.equal(true);
       });
       it('should handle times after midnight and after closing', () => {
         const openingTimesJson = getRegularWorkingWeekWithCustomSession(
-        [{ opens: '09:00', closes: '12:00' },
-          { opens: '13:00', closes: '01:00' }]);
+          [{ opens: '09:00', closes: '12:00' },
+            { opens: '13:00', closes: '01:00' }]);
         const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
         const date = getMoment('tuesday', 1, 5, 'Europe/London');
         expect(openingTimes.isOpen(date)).to.equal(false);
       });
-      describe('opening time alterations', () => {
-        it('should handle closed on a bank holiday', () => {
-          const openingTimesJson = getRegularWorkingWeek();
-          const aBankHoliday = moment('2016-08-29T10:30:00+00:00');
-          const alterations = {
-            '2016-01-01': [],
-            '2016-08-29': [],
-          };
-          const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London', alterations);
-          expect(openingTimes.isOpen(aBankHoliday)).to.equal(false);
-        });
-        it('should handle reduced opening hours on a bank holiday', () => {
-          const openingTimesJson = getRegularWorkingWeek();
-          const alterations = {
-            '2016-01-01': [],
-            '2016-08-29': [{ opens: '11:00', closes: '16:30' }],
-          };
-          const timeZone = 'Europe/London';
-          const openingTimes = new OpeningTimes(openingTimesJson, timeZone, alterations);
-          const closedDateTime = moment('2016-08-29T10:30:00+01:00').tz(timeZone);
-          expect(openingTimes.isOpen(closedDateTime)).to.equal(false);
-          const openDateTime = moment('2016-08-29T11:30:00+01:00').tz(timeZone);
-          expect(openingTimes.isOpen(openDateTime)).to.equal(true);
+    });
+    describe('with opening times in different time zones', () => {
+      describe('Opening times - London 9:00 - 17:30', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+        it('should return true for 8 am UTC time', () => {
+          const date = getMoment('monday', 8, 0, 'UTC');
+          expect(openingTimes.isOpen(date)).to.equal(true);
         });
       });
-      describe('closed', () => {
-        const openingTimesJson = getClosedAllWeek();
-        const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
-        it('should override all other session times', () => {
-          const date = getMoment('monday', 10, 0, 'Europe/London');
+      describe('Opening times - Tokyo 9:00 - 17:30', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        const openingTimes = new OpeningTimes(openingTimesJson, 'Asia/Tokyo');
+        it('should return true for 8 am London time', () => {
+          const date = getMoment('monday', 8, 0, 'Europe/London');
+          expect(openingTimes.isOpen(date)).to.equal(true);
+        });
+        it('should return false for 4 pm London time ', () => {
+          const date = getMoment('monday', 11, 0, 'Europe/London');
           expect(openingTimes.isOpen(date)).to.equal(false);
         });
       });
-      describe('with opening times in different time zones', () => {
-        describe('Opening times - London 9:00 - 17:30', () => {
-          const openingTimesJson = getRegularWorkingWeek();
-          const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
-          it('should return true for 8 am UTC time', () => {
-            const date = getMoment('monday', 8, 0, 'UTC');
-            expect(openingTimes.isOpen(date)).to.equal(true);
-          });
+    });
+    describe('opening time alterations', () => {
+      it('should handle closed', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        const aBankHoliday = moment('2016-08-29T10:30:00+00:00');
+        const alterations = {
+          '2016-01-01': [],
+          '2016-08-29': [],
+        };
+        const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London', alterations);
+        expect(openingTimes.isOpen(aBankHoliday)).to.equal(false);
+      });
+      it('should handle reduced opening hours', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        const alterations = {
+          '2016-01-01': [],
+          '2016-08-29': [{ opens: '11:00', closes: '16:30' }],
+        };
+        const timeZone = 'Europe/London';
+        const openingTimes = new OpeningTimes(openingTimesJson, timeZone, alterations);
+        const beforeOpeningTime = moment('2016-08-29T10:55:00+01:00').tz(timeZone);
+        expect(openingTimes.isOpen(beforeOpeningTime)).to.equal(false);
+        const duringOpeningTime = moment('2016-08-29T12:30:00+01:00').tz(timeZone);
+        expect(openingTimes.isOpen(duringOpeningTime)).to.equal(true);
+        const afterOpeningTime = moment('2016-08-29T16:35:00+01:00').tz(timeZone);
+        expect(openingTimes.isOpen(afterOpeningTime)).to.equal(false);
+      });
+      it('should handle extended opening hours', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        const alterations = {
+          '2016-01-01': [],
+          '2016-08-29': [{ opens: '07:00', closes: '01:30' }],
+        };
+        const timeZone = 'Europe/London';
+        const openingTimes = new OpeningTimes(openingTimesJson, timeZone, alterations);
+        [
+          { time: '2016-08-29T06:55:00+01:00', expected: false },
+          { time: '2016-08-29T11:30:00+01:00', expected: true },
+          { time: '2016-08-30T22:35:00+01:00', expected: false },
+        ].forEach((test) => {
+          const aMoment = moment(test.time).tz(timeZone);
+          expect(openingTimes.isOpen(aMoment)).to.equal(test.expected);
         });
-        describe('Opening times - Tokyo 9:00 - 17:30', () => {
-          const openingTimesJson = getRegularWorkingWeek();
-          const openingTimes = new OpeningTimes(openingTimesJson, 'Asia/Tokyo');
-          it('should return true for 8 am London time', () => {
-            const date = getMoment('monday', 8, 0, 'Europe/London');
-            expect(openingTimes.isOpen(date)).to.equal(true);
-          });
-          it('should return false for 4 pm London time ', () => {
-            const date = getMoment('monday', 11, 0, 'Europe/London');
-            expect(openingTimes.isOpen(date)).to.equal(false);
-          });
+      });
+      it('should handle extended opening hours which span midnight', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        const alterations = {
+          '2016-01-01': [],
+          '2016-08-29': [{ opens: '07:00', closes: '01:30' }],
+        };
+
+        const timeZone = 'Europe/London';
+        const openingTimes = new OpeningTimes(openingTimesJson, timeZone, alterations);
+        [
+          { time: '2016-08-30T01:25:00+01:00', expected: true },
+        ].forEach((test) => {
+          const aMoment = moment(test.time).tz(timeZone);
+          expect(openingTimes.isOpen(aMoment)).to.equal(test.expected);
         });
       });
     });
@@ -396,9 +423,9 @@ describe('OpeningTimes', () => {
   describe('formatOpeningTimes()', () => {
     it('when passed the format string \'HH:mm\' times should be returned in that format', () => {
       const openingTimesJson = getRegularWorkingWeekWithCustomSession(
-      [{ opens: '09:00', closes: '12:30' },
-       { opens: '13:30', closes: '17:30' },
-       { opens: '18:30', closes: '00:00' }]);
+        [{ opens: '09:00', closes: '12:30' },
+          { opens: '13:30', closes: '17:30' },
+          { opens: '18:30', closes: '00:00' }]);
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes('HH:mm');
       expect(formattedOpeningTimes.monday[0].opens).to.equal('09:00');
@@ -410,9 +437,9 @@ describe('OpeningTimes', () => {
     });
     it('by default times should be returned as am/pm', () => {
       const openingTimesJson = getRegularWorkingWeekWithCustomSession(
-      [{ opens: '09:00', closes: '12:30' },
-       { opens: '13:30', closes: '17:30' },
-       { opens: '18:30', closes: '00:00' }]);
+        [{ opens: '09:00', closes: '12:30' },
+          { opens: '13:30', closes: '17:30' },
+          { opens: '18:30', closes: '00:00' }]);
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes();
       expect(formattedOpeningTimes.monday[0].opens).to.equal('9:00 am');

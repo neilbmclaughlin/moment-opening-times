@@ -22,9 +22,9 @@ class OpeningTimes {
 
     assert(timeZone, 'parameter \'timeZone\' undefined/empty');
     assert(moment.tz.zone(timeZone), 'parameter \'timeZone\' not a valid timezone');
-    this.openingTimes = openingTimes;
-    this.timeZone = timeZone;
-    this.alterations = alterations;
+    this._openingTimes = openingTimes;
+    this._timeZone = timeZone;
+    this._alterations = alterations;
   }
 
   /* Private methods - you could use them but they  are not part of the API
@@ -35,7 +35,7 @@ class OpeningTimes {
   }
 
   _getTime(date, hour, minute) {
-    const returnDate = date.clone().tz(this.timeZone);
+    const returnDate = date.clone().tz(this._timeZone);
     returnDate.set({
       hour,
       minute,
@@ -55,22 +55,22 @@ class OpeningTimes {
 
   _createDateTime(dateTime, timeString) {
     const time = this._getTimeFromString(timeString);
-    return this._getTime(dateTime, time.hours, time.minutes).tz(this.timeZone);
+    return this._getTime(dateTime, time.hours, time.minutes).tz(this._timeZone);
   }
 
-  _timeInRange(date, open, close) {
+  _timeInRange(referenceDate, openingHoursDate, open, close) {
     const openTime = this._getTimeFromString(open);
     const closeTime = this._getTimeFromString(close);
 
-    const start = this._getTime(date, openTime.hours, openTime.minutes);
-    let end = this._getTime(date, closeTime.hours, closeTime.minutes);
+    const start = this._getTime(openingHoursDate, openTime.hours, openTime.minutes);
+    let end = this._getTime(openingHoursDate, closeTime.hours, closeTime.minutes);
 
     if (end < start) {
       // time spans midnight
       end = end.add(1, 'day');
     }
 
-    return date.isBetween(start, end, null, '[]');
+    return referenceDate.isBetween(start, end, null, '[]');
   }
 
   _isClosedAllDay(daysOpeningTimes) {
@@ -102,7 +102,7 @@ class OpeningTimes {
   _getNextOpeningTimeForDay(dateTime) {
     const day = this._getDayName(dateTime);
 
-    const nextOpeningTime = this.openingTimes[day]
+    const nextOpeningTime = this._openingTimes[day]
       .map((t) => this._createDateTime(dateTime, t.opens))
       .filter((t) => dateTime < t)[0];
 
@@ -112,7 +112,7 @@ class OpeningTimes {
   _getNextClosingTimeForDay(dateTime) {
     const day = this._getDayName(dateTime);
 
-    const nextClosingTime = this.openingTimes[day]
+    const nextClosingTime = this._openingTimes[day]
       .map((t) => {
         const opens = this._createDateTime(dateTime, t.opens);
         const closes = this._createDateTime(dateTime, t.closes);
@@ -137,16 +137,16 @@ class OpeningTimes {
   }
 
   _getOpeningTimesForDate(date) {
-    if (this.alterations) {
+    if (this._alterations) {
       // TODO: decide what to do if there is only >1 match
       const alterationMatch =
-        Object.keys(this.alterations)
+        Object.keys(this._alterations)
           .filter((a) => moment(a).isSame(date, 'day'))[0];
       return alterationMatch ?
-        this.alterations[alterationMatch] :
-        this.openingTimes[this._getDayName(date)];
+        this._alterations[alterationMatch] :
+        this._openingTimes[this._getDayName(date)];
     }
-    return this.openingTimes[this._getDayName(date)];
+    return this._openingTimes[this._getDayName(date)];
   }
 
   _getOpenSessions(date) {
@@ -191,13 +191,13 @@ class OpeningTimes {
 
     const day = this._getDayName(dateTime);
 
-    if (this._isClosedAllDay(this.openingTimes[day])) {
-      return this._getNextOpeningTimeForWeek(dateTime, this.openingTimes);
+    if (this._isClosedAllDay(this._openingTimes[day])) {
+      return this._getNextOpeningTimeForWeek(dateTime, this._openingTimes);
     }
 
     return (
       this._getNextOpeningTimeForDay(dateTime) ||
-      this._getNextOpeningTimeForWeek(dateTime, this.openingTimes)
+      this._getNextOpeningTimeForWeek(dateTime, this._openingTimes)
     );
   }
 
@@ -251,7 +251,7 @@ class OpeningTimes {
 
     moment.weekdays().forEach((d) => {
       const day = d.toLowerCase();
-      openingTimes[day] = this.openingTimes[day].map((t) =>
+      openingTimes[day] = this._openingTimes[day].map((t) =>
         ({
           opens: this._formatTime(t.opens, formatString),
           closes: this._formatTime(t.closes, formatString),
