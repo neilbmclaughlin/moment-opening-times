@@ -132,16 +132,43 @@ class OpeningTimes {
     return this._getTime(aDate, time.hours, time.minutes).format(formatString);
   }
 
+  _getOpeningTimesForDate(date) {
+    return this.openingTimes[this._getDayName(date)];
+  }
+
+  _getOpenSessions(date) {
+    // Get sessions for today and yesterday for the cases where opening hours span midnight
+    return [-1, 0].map((d) => {
+      const aDate = date.clone().add(d, 'day');
+      const openingTimes = this._getOpeningTimesForDate(aDate);
+      return openingTimes.map((t) => {
+        const from = this._createDateTime(aDate, t.opens);
+        const to = this._createDateTime(aDate, t.closes);
+
+        if (to < from) {
+          to.add(1, 'day');
+        }
+
+        return {
+          from: from.format(),
+          to: to.format(),
+        };
+      });
+    });
+  }
+
+  _findMomentInSessions(date, sessions) {
+    return sessions
+      .some((day) =>
+       (day.some((session) => (date.isBetween(session.from, session.to, null, '[]'))))
+      );
+  }
+
   /* Public API */
 
   isOpen(date) {
-    const daysOpeningTimes = this.openingTimes[this._getDayName(date)];
-    if (this._isClosedAllDay(daysOpeningTimes)) {
-      return false;
-    }
-    return (daysOpeningTimes.some(
-      (t) => this._timeInRange(date, t.opens, t.closes)
-    ));
+    const sessions = this._getOpenSessions(date);
+    return this._findMomentInSessions(date, sessions);
   }
 
   nextOpen(dateTime) {

@@ -164,6 +164,21 @@ describe('OpeningTimes', () => {
         expect(openingTimes.isOpen(date)).to.equal(false);
       });
     });
+    describe('opening times spanning midnight', () => {
+      const openingTimesJson = getRegularWorkingWeekWithCustomSession(
+      [{ opens: '09:00', closes: '12:00' },
+       { opens: '13:00', closes: '01:00' }]);
+      it('should handle times after midnight but before closing', () => {
+        const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+        const date = getMoment('tuesday', 0, 55, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(true);
+      });
+      it('should handle times after midnight and after closing', () => {
+        const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
+        const date = getMoment('tuesday', 1, 5, 'Europe/London');
+        expect(openingTimes.isOpen(date)).to.equal(false);
+      });
+    });
     describe('closed', () => {
       const openingTimesJson = getClosedAllWeek();
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
