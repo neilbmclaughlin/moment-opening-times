@@ -6,8 +6,6 @@ require('moment-timezone');
 const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
 
 class OpeningTimes {
-
-
 // TODO: Change order of parameters or use named parameter collection
   constructor(openingTimes, timeZone, alterations) {
     assert(openingTimes, 'parameter \'openingTimes\' undefined/empty');
@@ -100,9 +98,7 @@ class OpeningTimes {
   }
 
   _getNextOpeningTimeForDay(dateTime) {
-    const day = this._getDayName(dateTime);
-
-    const nextOpeningTime = this._openingTimes[day]
+    const nextOpeningTime = this._getOpeningTimesForDate(dateTime)
       .map((t) => this._createDateTime(dateTime, t.opens))
       .filter((t) => dateTime < t)[0];
 
@@ -110,9 +106,7 @@ class OpeningTimes {
   }
 
   _getNextClosingTimeForDay(dateTime) {
-    const day = this._getDayName(dateTime);
-
-    const nextClosingTime = this._openingTimes[day]
+    const nextClosingTime = this._getOpeningTimesForDate(dateTime)
       .map((t) => {
         const opens = this._createDateTime(dateTime, t.opens);
         const closes = this._createDateTime(dateTime, t.closes);

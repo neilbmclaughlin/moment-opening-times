@@ -1,4 +1,5 @@
 const chai = require('chai');
+chai.use(require('chai-moment'));
 const AssertionError = require('assert').AssertionError;
 const OpeningTimes = require('../OpeningTimes');
 const moment = require('moment');
@@ -82,6 +83,17 @@ function getRegularWorkingWeekWithCustomSession(session) {
   const week = setUpAllWeek(getCustomSession);
   week.sunday = getClosedDay();
   return week;
+}
+
+function expectOpeningTimes(openingTimes, expectedOpenStatus, timeZone) {
+  expectedOpenStatus.forEach((test) => {
+    const aMoment = moment(test.time).tz(timeZone);
+    expect(openingTimes.isOpen(aMoment)).to.equal(test.expected);
+  });
+}
+
+function momentsShouldBeSame(moment1, moment2) {
+  expect(moment1).to.be.sameMoment(moment2);
 }
 
 describe('OpeningTimes', () => {
@@ -223,12 +235,14 @@ describe('OpeningTimes', () => {
         };
         const timeZone = 'Europe/London';
         const openingTimes = new OpeningTimes(openingTimesJson, timeZone, alterations);
-        const beforeOpeningTime = moment('2016-08-29T10:55:00+01:00').tz(timeZone);
-        expect(openingTimes.isOpen(beforeOpeningTime)).to.equal(false);
-        const duringOpeningTime = moment('2016-08-29T12:30:00+01:00').tz(timeZone);
-        expect(openingTimes.isOpen(duringOpeningTime)).to.equal(true);
-        const afterOpeningTime = moment('2016-08-29T16:35:00+01:00').tz(timeZone);
-        expect(openingTimes.isOpen(afterOpeningTime)).to.equal(false);
+        expectOpeningTimes(
+          openingTimes,
+          [
+            { time: '2016-08-29T10:55:00+01:00', expected: false },
+            { time: '2016-08-29T12:30:00+01:00', expected: true },
+            { time: '2016-08-29T16:35:00+01:00', expected: false },
+          ],
+          timeZone);
       });
       it('should handle extended opening hours', () => {
         const openingTimesJson = getRegularWorkingWeek();
@@ -238,14 +252,14 @@ describe('OpeningTimes', () => {
         };
         const timeZone = 'Europe/London';
         const openingTimes = new OpeningTimes(openingTimesJson, timeZone, alterations);
-        [
-          { time: '2016-08-29T06:55:00+01:00', expected: false },
-          { time: '2016-08-29T11:30:00+01:00', expected: true },
-          { time: '2016-08-30T22:35:00+01:00', expected: false },
-        ].forEach((test) => {
-          const aMoment = moment(test.time).tz(timeZone);
-          expect(openingTimes.isOpen(aMoment)).to.equal(test.expected);
-        });
+        expectOpeningTimes(
+          openingTimes,
+          [
+            { time: '2016-08-29T06:55:00+01:00', expected: false },
+            { time: '2016-08-29T11:30:00+01:00', expected: true },
+            { time: '2016-08-30T22:35:00+01:00', expected: false },
+          ],
+          timeZone);
       });
       it('should handle extended opening hours which span midnight', () => {
         const openingTimesJson = getRegularWorkingWeek();
@@ -278,35 +292,35 @@ describe('OpeningTimes', () => {
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 12, 40, 'Europe/London');
       const expectedOpeningDateTime = getMoment('tuesday', 9, 0, 'Europe/London');
-      expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
+      momentsShouldBeSame(openingTimes.nextOpen(date), expectedOpeningDateTime);
     });
     it('when during lunchtime should return start of afternoon session', () => {
       const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 12, 40, 'Europe/London');
       const expectedOpeningDateTime = getMoment('monday', 13, 30, 'Europe/London');
-      expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
+      momentsShouldBeSame(openingTimes.nextOpen(date), expectedOpeningDateTime);
     });
     it('when during dinnertime should return start of evening session', () => {
       const openingTimesJson = getRegularWorkingWeekWithLunchBreaksAndEveningSession();
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 17, 40, 'Europe/London');
       const expectedOpeningDateTime = getMoment('monday', 18, 30, 'Europe/London');
-      expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
+      momentsShouldBeSame(openingTimes.nextOpen(date), expectedOpeningDateTime);
     });
     it('when before days opening time should return following opening time', () => {
       const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 8, 30, 'Europe/London');
       const expectedOpeningDateTime = getMoment('monday', 9, 0, 'Europe/London');
-      expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
+      momentsShouldBeSame(openingTimes.nextOpen(date), expectedOpeningDateTime);
     });
     it('when after days closing time should return following days opening time', () => {
       const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 18, 30, 'Europe/London');
       const expectedOpeningDateTime = getMoment('tuesday', 9, 0, 'Europe/London');
-      expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
+      momentsShouldBeSame(openingTimes.nextOpen(date), expectedOpeningDateTime);
     });
     it('when after fridays closing time should return mondays opening time', () => {
       const openingTimesJson = getRegularWorkingWeek();
@@ -319,14 +333,26 @@ describe('OpeningTimes', () => {
         .add(3, 'days')
         .hours(9)
         .minutes(0);
-      expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
+      momentsShouldBeSame(openingTimes.nextOpen(date), expectedOpeningDateTime);
     });
     it('when currently open should return the passed datetime', () => {
       const openingTimesJson = getRegularWorkingWeek();
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 11, 30, 'Europe/London');
       const expectedOpeningDateTime = moment(date);
-      expect(openingTimes.nextOpen(date).format()).to.equal(expectedOpeningDateTime.format());
+      momentsShouldBeSame(openingTimes.nextOpen(date), expectedOpeningDateTime);
+    });
+    it('should use alterations', () => {
+      const openingTimesJson = getRegularWorkingWeek();
+      const alterations = {
+        '2016-01-01': [],
+        '2016-08-29': [{ opens: '11:00', closes: '16:30' }],
+      };
+      const timeZone = 'Europe/London';
+      const openingTimes = new OpeningTimes(openingTimesJson, timeZone, alterations);
+      const aMoment = moment('2016-08-27T22:30:00+01:00').tz(timeZone);
+      momentsShouldBeSame(openingTimes
+        .nextOpen(aMoment), moment('2016-08-29T11:00:00+01:00'));
     });
   });
   describe('nextClosed()', () => {
@@ -335,21 +361,22 @@ describe('OpeningTimes', () => {
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 11, 30, 'Europe/London');
       const expectedClosingDateTime = getMoment('monday', 12, 30, 'Europe/London');
-      expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
+      momentsShouldBeSame(openingTimes
+        .nextClosed(date), expectedClosingDateTime);
     });
     it('when during afternoon opening should return evening closing', () => {
       const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 15, 30, 'Europe/London');
       const expectedClosingDateTime = getMoment('monday', 17, 30, 'Europe/London');
-      expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
+      momentsShouldBeSame(openingTimes.nextClosed(date), expectedClosingDateTime);
     });
     it('when currently closed should return the passed date', () => {
       const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 21, 30, 'Europe/London');
       const expectedClosingDateTime = moment(date);
-      expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
+      momentsShouldBeSame(openingTimes.nextClosed(date), expectedClosingDateTime);
     });
     it('should handle closing time of midnight', () => {
       const openingTimesJson = getRegularWorkingWeekWithCustomSession(
@@ -360,7 +387,7 @@ describe('OpeningTimes', () => {
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 21, 30, 'Europe/London');
       const expectedClosingDateTime = getMoment('tuesday', 0, 0, 'Europe/London');
-      expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
+      momentsShouldBeSame(openingTimes.nextClosed(date), expectedClosingDateTime);
     });
     it('should handle closing time of after midnight', () => {
       const openingTimesJson = getRegularWorkingWeekWithCustomSession(
@@ -371,7 +398,18 @@ describe('OpeningTimes', () => {
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const date = getMoment('monday', 21, 30, 'Europe/London');
       const expectedClosingDateTime = getMoment('tuesday', 1, 0, 'Europe/London');
-      expect(openingTimes.nextClosed(date).format()).to.equal(expectedClosingDateTime.format());
+      momentsShouldBeSame(openingTimes.nextClosed(date), expectedClosingDateTime);
+    });
+    it('should use alterations', () => {
+      const openingTimesJson = getRegularWorkingWeek();
+      const alterations = {
+        '2016-01-01': [],
+        '2016-08-29': [{ opens: '11:00', closes: '16:30' }],
+      };
+      const timeZone = 'Europe/London';
+      const openingTimes = new OpeningTimes(openingTimesJson, timeZone, alterations);
+      const aMoment = moment('2016-08-29T11:30:00+01:00').tz(timeZone);
+      momentsShouldBeSame(openingTimes.nextClosed(aMoment), moment('2016-08-29T16:30:00+01:00'));
     });
   });
   describe('getOpeningHoursMessage()', () => {
