@@ -32,7 +32,7 @@
     "mocha-lcov-reporter": "^1.2.0"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "TZ=GMT mocha",
     "watch-test": "npm run test -- --watch --reporter min",
     "lint": "eslint --ext .js,.json .",
     "generate-coverage": "istanbul cover _mocha -- --recursive test",

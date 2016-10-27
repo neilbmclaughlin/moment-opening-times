@@ -6,7 +6,6 @@ require('moment-timezone');
 const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
 
 class OpeningTimes {
-// TODO: Change order of parameters or use named parameter collection
   constructor(openingTimes, timeZone, alterations) {
     assert(openingTimes, 'parameter \'openingTimes\' undefined/empty');
     const parameterWeek = Object.keys(openingTimes).sort();
@@ -135,7 +134,7 @@ class OpeningTimes {
       // TODO: decide what to do if there is only >1 match
       const alterationMatch =
         Object.keys(this._alterations)
-          .filter((a) => moment(a).isSame(date, 'day'))[0];
+          .filter((a) => moment(a).tz(this._timeZone).isSame(date, 'day'))[0];
       return alterationMatch ?
         this._alterations[alterationMatch] :
         this._openingTimes[this._getDayName(date)];
