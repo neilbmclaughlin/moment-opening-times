@@ -457,17 +457,29 @@ describe('OpeningTimes', () => {
 
       it('should return a message asking to call for times', () => {
         const message = openingTimes.getOpeningHoursMessage(date);
-
         expect(message).to.be.equal('Call for opening times.');
+      });
+    });
+    describe('alterations', () => {
+      it('should use alterations', () => {
+        const openingTimesJson = getRegularWorkingWeek();
+        const alterations = {
+          '2016-01-01': [],
+          '2016-08-29': [{ opens: '11:00', closes: '16:30' }],
+        };
+        const timeZone = 'Europe/London';
+        const openingTimes = new OpeningTimes(openingTimesJson, timeZone, alterations);
+        const aMoment = moment('2016-08-29T11:30:00+01:00').tz(timeZone);
+        expect(openingTimes.getOpeningHoursMessage(aMoment)).to.equal('Open until 4:30 pm today');
       });
     });
   });
   describe('formatOpeningTimes()', () => {
     it('when passed the format string \'HH:mm\' times should be returned in that format', () => {
       const openingTimesJson = getRegularWorkingWeekWithCustomSession([
-				{ opens: '09:00', closes: '12:30' },
-				{ opens: '13:30', closes: '17:30' },
-				{ opens: '18:30', closes: '00:00' },
+        { opens: '09:00', closes: '12:30' },
+        { opens: '13:30', closes: '17:30' },
+        { opens: '18:30', closes: '00:00' },
       ]);
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes('HH:mm');
@@ -480,9 +492,9 @@ describe('OpeningTimes', () => {
     });
     it('by default times should be returned as am/pm', () => {
       const openingTimesJson = getRegularWorkingWeekWithCustomSession([
-				{ opens: '09:00', closes: '12:30' },
-				{ opens: '13:30', closes: '17:30' },
-				{ opens: '18:30', closes: '00:00' },
+        { opens: '09:00', closes: '12:30' },
+        { opens: '13:30', closes: '17:30' },
+        { opens: '18:30', closes: '00:00' },
       ]);
       const openingTimes = new OpeningTimes(openingTimesJson, 'Europe/London');
       const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes();
