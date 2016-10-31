@@ -1,6 +1,6 @@
 const assert = require('assert');
 const util = require('util');
-const moment = require('moment');
+const Moment = require('moment');
 require('moment-timezone');
 
 const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
@@ -18,7 +18,7 @@ class OpeningTimes {
       ` (${util.inspect(openingTimes)})`);
 
     assert(timeZone, 'parameter \'timeZone\' undefined/empty');
-    assert(moment.tz.zone(timeZone), 'parameter \'timeZone\' not a valid timezone');
+    assert(Moment.tz.zone(timeZone), 'parameter \'timeZone\' not a valid timezone');
     this._openingTimes = openingTimes;
     this._timeZone = timeZone;
     this._alterations = alterations;
@@ -27,12 +27,12 @@ class OpeningTimes {
   /* Private methods - you could use them but they  are not part of the API
      and therefore any changes to them will not trigger a major version number */
 
-  _getDayName(date) {
-    return date.format('dddd').toLowerCase();
+  _getDayName(moment) {
+    return moment.format('dddd').toLowerCase();
   }
 
-  _getTime(date, hour, minute) {
-    const returnDate = date.clone().tz(this._timeZone);
+  _getTime(moment, hour, minute) {
+    const returnDate = moment.clone().tz(this._timeZone);
     returnDate.set({
       hour,
       minute,
@@ -50,9 +50,9 @@ class OpeningTimes {
     };
   }
 
-  _createDateTime(dateTime, timeString) {
+  _createDateTime(moment, timeString) {
     const time = this._getTimeFromString(timeString);
-    return this._getTime(dateTime, time.hours, time.minutes).tz(this._timeZone);
+    return this._getTime(moment, time.hours, time.minutes).tz(this._timeZone);
   }
 
   _timeInRange(referenceDate, openingHoursDate, open, close) {
@@ -74,139 +74,115 @@ class OpeningTimes {
     return (daysOpeningTimes.length === 0);
   }
 
-
-  _getNextOpeningTimeForWeek(startDateTime, openingTimesForWeek) {
-    const dateTime = moment(startDateTime)
-      .set({ hour: 0, minute: 0, second: 0 });
-
-    const nextOpeningTime =
-      [1, 2, 3, 4, 5, 6, 7]
-        .filter((d) => {
-          // Remove unknown and closed days
-          const date = moment(dateTime).add(d, 'day');
-          const day = date.format('dddd').toLowerCase();
-          const daysOpeningTimes = openingTimesForWeek[day];
-          return daysOpeningTimes && !this._isClosedAllDay(daysOpeningTimes);
-        })
-        .map((d) => {
-          const date = moment(dateTime).add(d, 'day');
-          return this._getNextOpeningTimeForDay(date);
-        })[0];
-
-    return nextOpeningTime;
-  }
-
-  _getNextOpeningTimeForDay(dateTime) {
-    const nextOpeningTime = this._getOpeningTimesForDate(dateTime)
-      .map((t) => this._createDateTime(dateTime, t.opens))
-      .filter((t) => dateTime < t)[0];
-
-    return nextOpeningTime;
-  }
-
-  _getNextClosingTimeForDay(dateTime) {
-    const nextClosingTime = this._getOpeningTimesForDate(dateTime)
-      .map((t) => {
-        const opens = this._createDateTime(dateTime, t.opens);
-        const closes = this._createDateTime(dateTime, t.closes);
-        // Check if closing time is in the following day
-        if (closes.isBefore(opens)) {
-          closes.add(1, 'day');
-        }
-        return closes;
-      })
-      .filter((t) => dateTime < t)[0];
-
-    return nextClosingTime;
-  }
-
   _formatTime(timeString, formatString = 'h:mm a') {
     if (timeString === '00:00' || timeString === '23:59') {
       return 'midnight';
     }
-    const aDate = moment('2016-07-25T00:00:00+01:00');
+    const aDate = new Moment('2016-07-25T00:00:00+01:00');
     const time = this._getTimeFromString(timeString);
     return this._getTime(aDate, time.hours, time.minutes).format(formatString);
   }
 
-  _getOpeningTimesForDate(date) {
+  _getOpeningTimesForDate(moment) {
     if (this._alterations) {
       // TODO: decide what to do if there is only >1 match
       const alterationMatch =
         Object.keys(this._alterations)
-          .filter((a) => moment(a).tz(this._timeZone).isSame(date, 'day'))[0];
+          .filter((a) => new Moment(a).tz(this._timeZone).isSame(moment, 'day'))[0];
       return alterationMatch ?
         this._alterations[alterationMatch] :
-        this._openingTimes[this._getDayName(date)];
+        this._openingTimes[this._getDayName(moment)];
     }
-    return this._openingTimes[this._getDayName(date)];
+    return this._openingTimes[this._getDayName(moment)];
   }
 
-  _getOpenSessions(date) {
-    // Get sessions for today and yesterday for the cases where opening hours span midnight
-    return [-1, 0].map((d) => {
-      const aDate = date.clone().add(d, 'day');
+  _getOpenSessions(moment) {
+    // Get sessions for week (including yesterday for the cases where opening hours span midnight)
+    return [-1, 0, 1, 2, 3, 4, 5, 6].map((d) => {
+      const aDate = moment.clone().add(d, 'day');
       const openingTimes = this._getOpeningTimesForDate(aDate);
-      return openingTimes.map((t) => {
-        const from = this._createDateTime(aDate, t.opens);
-        const to = this._createDateTime(aDate, t.closes);
+      return openingTimes
+        .map((t) => {
+          const from = this._createDateTime(aDate, t.opens);
+          const to = this._createDateTime(aDate, t.closes);
 
-        if (to < from) {
-          to.add(1, 'day');
-        }
+          if (to < from) {
+            to.add(1, 'day');
+          }
 
-        return {
-          from: from.format(),
-          to: to.format(),
-        };
-      });
+          return {
+            from: from.format(),
+            to: to.format(),
+          };
+        });
     });
   }
 
-  _findMomentInSessions(date, sessions) {
-    return sessions
-      .some((day) =>
-       (day.some((session) => (date.isBetween(session.from, session.to, null, '[]'))))
-      );
+  _getDateInSessionFinder(moment) {
+    return (session) => (moment.isBetween(session.from, session.to, null, '[]'));
   }
 
+  _getDateBeforeSessionFinder(moment) {
+    return (session) => (moment.isBefore(session.from));
+  }
+
+  _findMomentInSessions(moment, sessions) {
+    return sessions.some((day) => (day.some(this._getDateInSessionFinder(moment))));
+  }
+
+  _findNextOpeningTime(moment, sessions) {
+    const nextDay = sessions
+      .filter((day) => (!this._isClosedAllDay(day)))
+      .find((day) => (day.some(this._getDateBeforeSessionFinder(moment))));
+
+    if (nextDay) {
+      const nextSession = nextDay.find(this._getDateBeforeSessionFinder(moment));
+      return new Moment(nextSession.from).tz(this._timeZone);
+    }
+
+    return undefined;
+  }
+
+  _findNextClosingTime(moment, sessions) {
+    const currentDay = sessions
+      .find((day) => (day.some(this._getDateInSessionFinder(moment))));
+
+    if (currentDay) {
+      const thisSession = currentDay.find(this._getDateInSessionFinder(moment));
+      return new Moment(thisSession.to).tz(this._timeZone);
+    }
+
+    return undefined;
+  }
   /* Public API */
 
-  isOpen(date) {
-    const sessions = this._getOpenSessions(date);
-    return this._findMomentInSessions(date, sessions);
+  isOpen(moment) {
+    const sessions = this._getOpenSessions(moment);
+    return this._findMomentInSessions(moment, sessions);
   }
 
-  nextOpen(dateTime) {
-    if (this.isOpen(dateTime)) {
-      return dateTime;
+  nextOpen(moment) {
+    const allSessions = this._getOpenSessions(moment);
+    if (this._findMomentInSessions(moment, allSessions)) {
+      return moment;
     }
-
-    const day = this._getDayName(dateTime);
-
-    if (this._isClosedAllDay(this._openingTimes[day])) {
-      return this._getNextOpeningTimeForWeek(dateTime, this._openingTimes);
-    }
-
-    return (
-      this._getNextOpeningTimeForDay(dateTime) ||
-      this._getNextOpeningTimeForWeek(dateTime, this._openingTimes)
-    );
+    return this._findNextOpeningTime(moment, allSessions);
   }
 
-  nextClosed(dateTime) {
-    if (!this.isOpen(dateTime)) {
-      return dateTime;
+  nextClosed(moment) {
+    const allSessions = this._getOpenSessions(moment);
+    if (!this._findMomentInSessions(moment, allSessions)) {
+      return moment;
     }
 
-    return this._getNextClosingTimeForDay(dateTime);
+    return this._findNextClosingTime(moment, allSessions);
   }
 
-  getOpeningHoursMessage(datetime) {
-    if (this.isOpen(datetime)) {
-      const closedNext = this.nextClosed(datetime);
+  getOpeningHoursMessage(moment) {
+    if (this.isOpen(moment)) {
+      const closedNext = this.nextClosed(moment);
       const closedTime = closedNext.format('h:mm a');
-      const closedDay = closedNext.calendar(datetime, {
+      const closedDay = closedNext.calendar(moment, {
         sameDay: '[today]',
         nextDay: '[tomorrow]',
         nextWeek: 'dddd',
@@ -220,12 +196,12 @@ class OpeningTimes {
         'Open until midnight' :
         `Open until ${closedTime} ${closedDay}`);
     }
-    const openNext = this.nextOpen(datetime);
+    const openNext = this.nextOpen(moment);
     if (!openNext) {
       return 'Call for opening times.';
     }
-    const timeUntilOpen = openNext.diff(datetime, 'minutes');
-    const openDay = openNext.calendar(datetime, {
+    const timeUntilOpen = openNext.diff(moment, 'minutes');
+    const openDay = openNext.calendar(moment, {
       sameDay: '[today]',
       nextDay: '[tomorrow]',
       nextWeek: 'dddd',
@@ -242,7 +218,7 @@ class OpeningTimes {
   getFormattedOpeningTimes(formatString) {
     const openingTimes = {};
 
-    moment.weekdays().forEach((d) => {
+    Moment.weekdays().forEach((d) => {
       const day = d.toLowerCase();
       openingTimes[day] = this._openingTimes[day].map((t) =>
         ({
