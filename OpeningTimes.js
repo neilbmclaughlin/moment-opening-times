@@ -96,9 +96,9 @@ class OpeningTimes {
     return this._openingTimes[this._getDayName(moment)];
   }
 
-  _getOpenSessions(moment) {
+  _getOpenSessions(moment, days) {
     // Get sessions for week (including yesterday for the cases where opening hours span midnight)
-    return [-1, 0, 1, 2, 3, 4, 5, 6].map((d) => {
+    return days.map((d) => {
       const aDate = moment.clone().add(d, 'day');
       const openingTimes = this._getOpeningTimesForDate(aDate);
       return openingTimes
@@ -157,12 +157,12 @@ class OpeningTimes {
   /* Public API */
 
   isOpen(moment) {
-    const sessions = this._getOpenSessions(moment);
+    const sessions = this._getOpenSessions(moment, [-1, 0]);
     return this._findMomentInSessions(moment, sessions);
   }
 
   nextOpen(moment) {
-    const allSessions = this._getOpenSessions(moment);
+    const allSessions = this._getOpenSessions(moment, [-1, 0, 1, 2, 3, 4, 5, 6]);
     if (this._findMomentInSessions(moment, allSessions)) {
       return moment;
     }
@@ -170,7 +170,7 @@ class OpeningTimes {
   }
 
   nextClosed(moment) {
-    const allSessions = this._getOpenSessions(moment);
+    const allSessions = this._getOpenSessions(moment, [-1, 0, 1, 2, 3, 4, 5, 6]);
     if (!this._findMomentInSessions(moment, allSessions)) {
       return moment;
     }
