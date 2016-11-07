@@ -112,10 +112,7 @@ class OpeningTimes {
         }
 
         if (moment.isBetween(from, to, null, '[]')) {
-          returnValue = {
-            from: from.format(),
-            to: to.format(),
-          };
+          returnValue = { from, to };
           return returnValue;
         }
       }
@@ -170,24 +167,7 @@ class OpeningTimes {
     return undefined;
   }
 
-  _findNextClosingTime(moment, sessions) {
-    const currentDay = sessions
-      .find((day) => (day.some(this._getDateInSessionFinder(moment))));
-
-    if (currentDay) {
-      const thisSession = currentDay.find(this._getDateInSessionFinder(moment));
-      return new Moment(thisSession.to).tz(this._timeZone);
-    }
-
-    return undefined;
-  }
-  /* Public API */
-
-  isOpen(moment) {
-    return (this._getOpeningTimesSessionForMoment(moment, 1) !== undefined);
-  }
-
-  nextOpen(moment) {
+  _nextOpen(moment) {
     const allSessions = this._getOpenSessions(moment, [-1, 0, 1, 2, 3, 4, 5, 6]);
     if (this._findMomentInSessions(moment, allSessions)) {
       return moment;
@@ -195,18 +175,26 @@ class OpeningTimes {
     return this._findNextOpeningTime(moment, allSessions);
   }
 
-  nextClosed(moment) {
-    const allSessions = this._getOpenSessions(moment, [-1, 0, 1, 2, 3, 4, 5, 6]);
-    if (!this._findMomentInSessions(moment, allSessions)) {
-      return moment;
+
+  /* Public API */
+
+  isOpen(moment) {
+    return (this._getOpeningTimesSessionForMoment(moment, 1) !== undefined);
+  }
+
+  getStatus(moment) {
+    const session = this._getOpeningTimesSessionForMoment(moment, 1);
+    if (session) {
+      return { isOpen: true, until: session.to };
     }
 
-    return this._findNextClosingTime(moment, allSessions);
+    return { isOpen: false, until: this._nextOpen(moment) };
   }
 
   getOpeningHoursMessage(moment) {
-    if (this.isOpen(moment)) {
-      const closedNext = this.nextClosed(moment);
+    const status = this.getStatus(moment);
+    if (status.isOpen) {
+      const closedNext = status.until;
       const closedTime = closedNext.format('h:mm a');
       const closedDay = closedNext.calendar(moment, {
         sameDay: '[today]',
@@ -222,7 +210,7 @@ class OpeningTimes {
         'Open until midnight' :
         `Open until ${closedTime} ${closedDay}`);
     }
-    const openNext = this.nextOpen(moment);
+    const openNext = status.until;
     if (!openNext) {
       return 'Call for opening times.';
     }

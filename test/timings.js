@@ -22,7 +22,7 @@ function preProcessOrgs() {
 }
 
 describe('timings', function () {
-  this.timeout(3000);
+  this.timeout(6000);
   preProcessOrgs(orgs);
   describe(`isOpen for ${orgs.length} orgs`, () => {
     it('disregarding alterations', () => {
@@ -44,5 +44,25 @@ describe('timings', function () {
       });
     });
   });
+  describe(`getOpeningHoursMessage() for ${orgs.length} orgs`, () => {
+    it('disregarding alterations', () => {
+      orgs.forEach((o) => {
+        if (o.openingTimes) {
+          const openingTimes =
+            new OpeningTimes(o.openingTimes.general, timeZone);
+          openingTimes.getOpeningHoursMessage(new Moment('2016-11-05T11:00:00').tz(timeZone));
+        }
+      });
+    });
+    it('including alterations', () => {
+      orgs.forEach((o) => {
+        if (o.openingTimes) {
+          const openingTimes =
+            new OpeningTimes(o.openingTimes.general, timeZone, o.openingTimes.alterations);
+          openingTimes
+            .getOpeningHoursMessage(new Moment('2016-11-05T11:00:00').tz(timeZone));
+        }
+      });
+    });
+  });
 });
-
