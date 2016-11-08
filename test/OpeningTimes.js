@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */ // Do this to allow expect().to.be.null etc
+
 const chai = require('chai');
 const chaiMoment = require('chai-moment');
 const AssertionError = require('assert').AssertionError;
@@ -82,6 +84,14 @@ function getNewOpeningTimes(openingTimes, timeZone, alterations) {
   return new OpeningTimes(openingTimes, timeZone, alterations);
 }
 
+function getStatusWithUntil(openingTimes, moment) {
+  return openingTimes.getStatus(moment, { until: true });
+}
+
+function getStatus(openingTimes, moment) {
+  return openingTimes.getStatus(moment);
+}
+
 describe('OpeningTimes', () => {
   describe('constructor', () => {
     /* eslint-disable no-new, max-len */
@@ -131,13 +141,45 @@ describe('OpeningTimes', () => {
   });
 
   describe('getStatus()', () => {
+    describe('returned status value', () => {
+      const openingTimesJson = getRegularWorkingWeek();
+      const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
+      const moment = getMoment('monday', 11, 30, 'Europe/London');
+
+      describe('default values', () => {
+        const status = getStatus(openingTimes, moment);
+        it('isOpen should be populated', () => {
+          expect(status.isOpen).to.not.be.undefined;
+        });
+        it('moment should be populated', () => {
+          expect(status.moment).to.not.be.undefined;
+        });
+        it('until should not be populated', () => {
+          expect(status.until).to.be.undefined;
+        });
+      });
+      describe('passed until option', () => {
+        const status = getStatusWithUntil(openingTimes, moment);
+        it('isOpen should be populated', () => {
+          expect(status.isOpen).to.not.be.undefined;
+        });
+        it('moment should be populated', () => {
+          expect(status.moment).to.not.be.undefined;
+        });
+        it('until should be populated', () => {
+          expect(status.until).to.not.be.undefined;
+        });
+      });
+    });
+
     describe('single session (9:00 - 17:30)', () => {
       const openingTimesJson = getRegularWorkingWeek();
       const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
 
+
       describe('moment inside opening times', () => {
         const moment = getMoment('monday', 11, 30, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
@@ -148,7 +190,7 @@ describe('OpeningTimes', () => {
 
       describe('moment outside opening times', () => {
         const moment = getMoment('monday', 18, 30, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
@@ -164,7 +206,7 @@ describe('OpeningTimes', () => {
 
       describe('moment inside lunch time', () => {
         const moment = getMoment('monday', 13, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
@@ -175,7 +217,7 @@ describe('OpeningTimes', () => {
 
       describe('moment during the morning session', () => {
         const moment = getMoment('monday', 10, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
@@ -186,7 +228,7 @@ describe('OpeningTimes', () => {
 
       describe('moment during the afternoon session', () => {
         const moment = getMoment('monday', 14, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
@@ -197,7 +239,7 @@ describe('OpeningTimes', () => {
 
       describe('moment after the afternoon session', () => {
         const moment = getMoment('monday', 18, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
@@ -208,7 +250,7 @@ describe('OpeningTimes', () => {
 
       describe('moment before the morning session', () => {
         const moment = getMoment('monday', 8, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
@@ -223,7 +265,7 @@ describe('OpeningTimes', () => {
         const openingTimesJson = getClosedAllWeek();
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('monday', 12, 40, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
@@ -236,7 +278,7 @@ describe('OpeningTimes', () => {
         openingTimesJson.monday = [];
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('monday', 12, 40, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
@@ -250,7 +292,7 @@ describe('OpeningTimes', () => {
         openingTimesJson.sunday = [];
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('friday', 18, 30, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
@@ -271,7 +313,7 @@ describe('OpeningTimes', () => {
           ]);
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('monday', 21, 30, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
@@ -288,7 +330,7 @@ describe('OpeningTimes', () => {
       describe('moment after midnight but before closing', () => {
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('tuesday', 0, 55, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
@@ -301,7 +343,7 @@ describe('OpeningTimes', () => {
       describe('moment after midnight and after closing', () => {
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('tuesday', 1, 5, 'Europe/London');
-        const status = openingTimes.getStatus(moment);
+        const status = getStatusWithUntil(openingTimes, moment);
         it('status.isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
@@ -317,7 +359,7 @@ describe('OpeningTimes', () => {
 
         describe('8 am UTC time', () => {
           const moment = getMoment('monday', 8, 0, 'UTC');
-          const status = openingTimes.getStatus(moment);
+          const status = getStatusWithUntil(openingTimes, moment);
           it('status.isOpen should be false', () => {
             expect(status.isOpen).to.equal(true);
           });
@@ -335,7 +377,7 @@ describe('OpeningTimes', () => {
 
         describe('8 am Europe/London time', () => {
           const moment = getMoment('monday', 8, 0, 'Europe/London');
-          const status = openingTimes.getStatus(moment);
+          const status = getStatusWithUntil(openingTimes, moment);
           it('status.isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
@@ -348,7 +390,7 @@ describe('OpeningTimes', () => {
 
         describe('11 am Europe/London time', () => {
           const moment = getMoment('monday', 11, 0, 'Europe/London');
-          const status = openingTimes.getStatus(moment);
+          const status = getStatusWithUntil(openingTimes, moment);
           it('status.isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
@@ -367,7 +409,7 @@ describe('OpeningTimes', () => {
           '2016-08-29': [],
         };
         const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
-        const status = openingTimes.getStatus(new Moment('2016-08-29T10:55:00+01:00'));
+        const status = getStatusWithUntil(openingTimes, new Moment('2016-08-29T10:55:00+01:00'));
         it('status.isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
@@ -387,7 +429,7 @@ describe('OpeningTimes', () => {
 
         describe('moment during the alteration', () => {
           const moment = new Moment('2016-08-29T12:30:00+01:00');
-          const status = openingTimes.getStatus(moment);
+          const status = getStatusWithUntil(openingTimes, moment);
           it('status.isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
@@ -398,7 +440,7 @@ describe('OpeningTimes', () => {
 
         describe('moment after the alteration', () => {
           const moment = new Moment('2016-08-29T16:35:00+01:00');
-          const status = openingTimes.getStatus(moment);
+          const status = getStatusWithUntil(openingTimes, moment);
           it('status.isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
@@ -409,7 +451,7 @@ describe('OpeningTimes', () => {
 
         describe('moment before the alteration', () => {
           const moment = new Moment('2016-08-29T10:55:00+01:00');
-          const status = openingTimes.getStatus(moment);
+          const status = getStatusWithUntil(openingTimes, moment);
           it('status.isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
@@ -430,7 +472,7 @@ describe('OpeningTimes', () => {
 
         describe('moment before midnight and during the alteration', () => {
           const moment = new Moment('2016-08-29T11:30:00+01:00');
-          const status = openingTimes.getStatus(moment);
+          const status = getStatusWithUntil(openingTimes, moment);
           it('status.isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
@@ -441,7 +483,7 @@ describe('OpeningTimes', () => {
 
         describe('moment after midnight and during the alteration', () => {
           const moment = new Moment('2016-08-30T01:25:00+01:00');
-          const status = openingTimes.getStatus(moment);
+          const status = getStatusWithUntil(openingTimes, moment);
           it('status.isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
@@ -452,7 +494,7 @@ describe('OpeningTimes', () => {
 
         describe('moment after midnight and after the alteration', () => {
           const moment = new Moment('2016-08-30T01:35:00+01:00');
-          const status = openingTimes.getStatus(moment);
+          const status = getStatusWithUntil(openingTimes, moment);
           it('status.isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
@@ -460,87 +502,6 @@ describe('OpeningTimes', () => {
             momentsShouldBeSame(status.until, new Moment('2016-08-30T09:00:00+01:00'));
           });
         });
-      });
-    });
-  });
-
-  describe('getOpeningHoursMessage()', () => {
-    describe('regular opening hours', () => {
-      const openingTimesJson = getRegularWorkingWeekWithLunchBreaks();
-      const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
-
-      it('when currently closed and opening tomorrow should return closed message', () => {
-        const moment = getMoment('tuesday', 18, 0, 'Europe/London');
-        expect(openingTimes.getOpeningHoursMessage(moment))
-          .to.equal('Closed until 9:00 am tomorrow');
-      });
-
-      it('when currently closed and opening in 2 hours should return closed message', () => {
-        const moment = getMoment('monday', 7, 0, 'Europe/London');
-        expect(openingTimes.getOpeningHoursMessage(moment)).to.equal('Closed until 9:00 am today');
-      });
-
-      it('when currently closed and opening in 30 minutes should return closed message', () => {
-        const moment = getMoment('monday', 8, 30, 'Europe/London');
-        expect(openingTimes.getOpeningHoursMessage(moment)).to.equal('Opening in 30 minutes');
-      });
-    });
-
-    describe('midnight opening hours', () => {
-      const openingTimesJson = getRegularWorkingWeekWithCustomSession(
-        [
-          { opens: '09:00', closes: '12:30' },
-          { opens: '13:30', closes: '17:30' },
-          { opens: '18:30', closes: '00:00' },
-        ]);
-      const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
-
-      it('when currently open should return open message', () => {
-        const moment = getMoment('monday', 13, 30, 'Europe/London');
-        expect(openingTimes.getOpeningHoursMessage(moment)).to.equal('Open until 5:30 pm today');
-      });
-
-      it('when currently open and closing at 00:00 should return midnight message', () => {
-        const moment = getMoment('monday', 19, 30, 'Europe/London');
-        expect(openingTimes.getOpeningHoursMessage(moment)).to.equal('Open until midnight');
-      });
-    });
-
-    describe('closed all week', () => {
-      const openingTimesJson = getClosedAllWeek();
-      const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
-      const moment = getMoment('monday', 19, 30, 'Europe/London');
-
-      it('should return a message asking to call for times', () => {
-        const message = openingTimes.getOpeningHoursMessage(moment);
-        expect(message).to.be.equal('Call for opening times.');
-      });
-    });
-
-    describe('alterations', () => {
-      it('should use alterations within a day ', () => {
-        const openingTimesJson = getRegularWorkingWeek();
-        const alterations = {
-          '2016-01-01': [],
-          '2016-08-29': [{ opens: '11:00', closes: '16:30' }],
-        };
-        const timeZone = 'Europe/London';
-        const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
-        const aMoment = new Moment('2016-08-29T11:30:00+01:00').tz(timeZone);
-        expect(openingTimes.getOpeningHoursMessage(aMoment)).to.equal('Open until 4:30 pm today');
-      });
-
-      it('should use alterations which span midnight', () => {
-        const openingTimesJson = getRegularWorkingWeek();
-        const alterations = {
-          '2016-01-01': [],
-          '2016-08-29': [{ opens: '11:00', closes: '01:30' }],
-        };
-        const timeZone = 'Europe/London';
-        const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
-        const aMoment = new Moment('2016-08-29T11:30:00+01:00').tz(timeZone);
-        expect(openingTimes.getOpeningHoursMessage(aMoment))
-          .to.equal('Open until 1:30 am tomorrow');
       });
     });
   });

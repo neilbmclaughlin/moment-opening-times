@@ -55,21 +55,6 @@ class OpeningTimes {
     return this._getTime(moment, time.hours, time.minutes).tz(this._timeZone);
   }
 
-  _timeInRange(referenceDate, openingHoursDate, open, close) {
-    const openTime = this._getTimeFromString(open);
-    const closeTime = this._getTimeFromString(close);
-
-    const start = this._getTime(openingHoursDate, openTime.hours, openTime.minutes);
-    let end = this._getTime(openingHoursDate, closeTime.hours, closeTime.minutes);
-
-    if (end < start) {
-      // time spans midnight
-      end = end.add(1, 'day');
-    }
-
-    return referenceDate.isBetween(start, end, null, '[]');
-  }
-
   _isClosedAllDay(daysOpeningTimes) {
     return (daysOpeningTimes.length === 0);
   }
@@ -178,55 +163,16 @@ class OpeningTimes {
 
   /* Public API */
 
-  isOpen(moment) {
-    return (this._getOpeningTimesSessionForMoment(moment, 1) !== undefined);
-  }
+  getStatus(moment, options = {}) {
+    const returnValue = { moment };
 
-  getStatus(moment) {
     const session = this._getOpeningTimesSessionForMoment(moment, 1);
-    if (session) {
-      return { isOpen: true, until: session.to };
+    returnValue.isOpen = (session !== undefined);
+    if (options.until) {
+      returnValue.until = (session) ? session.to : this._nextOpen(moment);
     }
 
-    return { isOpen: false, until: this._nextOpen(moment) };
-  }
-
-  getOpeningHoursMessage(moment) {
-    const status = this.getStatus(moment);
-    if (status.isOpen) {
-      const closedNext = status.until;
-      const closedTime = closedNext.format('h:mm a');
-      const closedDay = closedNext.calendar(moment, {
-        sameDay: '[today]',
-        nextDay: '[tomorrow]',
-        nextWeek: 'dddd',
-        lastDay: '[yesterday]',
-        lastWeek: '[last] dddd',
-        sameElse: 'DD/MM/YYYY',
-      });
-      return (
-        ((closedDay === 'tomorrow' && closedTime === '12:00 am')
-          || (closedDay === 'today' && closedTime === '11:59 pm')) ?
-        'Open until midnight' :
-        `Open until ${closedTime} ${closedDay}`);
-    }
-    const openNext = status.until;
-    if (!openNext) {
-      return 'Call for opening times.';
-    }
-    const timeUntilOpen = openNext.diff(moment, 'minutes');
-    const openDay = openNext.calendar(moment, {
-      sameDay: '[today]',
-      nextDay: '[tomorrow]',
-      nextWeek: 'dddd',
-      lastDay: '[yesterday]',
-      lastWeek: '[last] dddd',
-      sameElse: 'DD/MM/YYYY',
-    });
-    return (
-      (timeUntilOpen <= 60) ?
-        `Opening in ${timeUntilOpen} minutes` :
-        `Closed until ${openNext.format('h:mm a')} ${openDay}`);
+    return returnValue;
   }
 
   getFormattedOpeningTimes(formatString) {
