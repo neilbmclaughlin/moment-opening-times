@@ -48,8 +48,7 @@
   "license": "MIT",
   "config": {
     "ghooks": {
-      "pre-commit":    "git stash --keep-index && npm run lint && npm run test && git stash pop",
-      "post-rewrite":  "git stash --keep-index && npm run lint && npm run test && git stash pop",
+      "pre-commit": "git stash --keep-index && npm run lint && npm run test && git stash pop",
       "post-checkout": "npm install"
     }
   }
