@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */ // Do this to allow expect().to.be.null etc
-
 const chai = require('chai');
 const chaiMoment = require('chai-moment');
 const AssertionError = require('assert').AssertionError;
@@ -149,26 +147,26 @@ describe('OpeningTimes', () => {
       describe('default values', () => {
         const status = getStatus(openingTimes, moment);
         it('isOpen should be populated', () => {
-          expect(status.isOpen).to.not.be.undefined;
+          expect(status.isOpen).to.not.equal(undefined);
         });
         it('moment should be populated', () => {
-          expect(status.moment).to.not.be.undefined;
+          expect(status.moment).to.not.equal(undefined);
         });
         it('until should not be populated', () => {
-          expect(status.until).to.be.undefined;
+          expect(status.until).to.equal(undefined);
         });
       });
 
       describe('passed until option', () => {
         const status = getStatusWithUntil(openingTimes, moment);
         it('isOpen should be populated', () => {
-          expect(status.isOpen).to.not.be.undefined;
+          expect(status.isOpen).to.not.equal(undefined);
         });
         it('moment should be populated', () => {
-          expect(status.moment).to.not.be.undefined;
+          expect(status.moment).to.not.equal(undefined);
         });
         it('until should be populated', () => {
-          expect(status.until).to.not.be.undefined;
+          expect(status.until).to.not.equal(undefined);
         });
       });
     });
