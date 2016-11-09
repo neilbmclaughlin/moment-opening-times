@@ -158,6 +158,7 @@ describe('OpeningTimes', () => {
           expect(status.until).to.be.undefined;
         });
       });
+
       describe('passed until option', () => {
         const status = getStatusWithUntil(openingTimes, moment);
         it('isOpen should be populated', () => {
@@ -175,7 +176,6 @@ describe('OpeningTimes', () => {
     describe('single session (9:00 - 17:30)', () => {
       const openingTimesJson = getRegularWorkingWeek();
       const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
-
 
       describe('moment inside opening times', () => {
         const moment = getMoment('monday', 11, 30, 'Europe/London');
@@ -273,6 +273,7 @@ describe('OpeningTimes', () => {
           expect(status.until).to.equal(undefined);
         });
       });
+
       describe('closed today', () => {
         const openingTimesJson = getRegularWorkingWeek();
         openingTimesJson.monday = [];
@@ -286,6 +287,7 @@ describe('OpeningTimes', () => {
           momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Europe/London'));
         });
       });
+
       describe('after friday and closed for the weekend', () => {
         const openingTimesJson = getRegularWorkingWeek();
         openingTimesJson.saturday = [];
@@ -305,6 +307,7 @@ describe('OpeningTimes', () => {
           momentsShouldBeSame(status.until, expectedOpeningDateTime);
         });
       });
+
       describe('closing time of midnight', () => {
         const openingTimesJson = getRegularWorkingWeekWithCustomSession(
           [
@@ -352,6 +355,7 @@ describe('OpeningTimes', () => {
         });
       });
     });
+
     describe('with opening times in different time zones', () => {
       describe('Opening times - London 9:00 - 17:30', () => {
         const openingTimesJson = getRegularWorkingWeek();
@@ -400,6 +404,7 @@ describe('OpeningTimes', () => {
         });
       });
     });
+
     describe('opening time alterations', () => {
       describe('closed for a day', () => {
         const timeZone = 'Europe/London';
