@@ -171,6 +171,77 @@ describe('OpeningTimes', () => {
       });
     });
 
+    describe('boundary tests', () => {
+      const openingTimesJson = getRegularWorkingWeek();
+      const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
+
+      describe('moment at session start', () => {
+        const moment = getMoment('monday', 9, 0, 'Europe/London');
+        const status = getStatusWithUntil(openingTimes, moment);
+        it('isOpen should be true', () => {
+          expect(status.isOpen).to.equal(true);
+        });
+        it('until should be next closed', () => {
+          momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Europe/London'));
+        });
+      });
+
+      describe('moment 1 minute before session start', () => {
+        const moment = getMoment('monday', 8, 59, 'Europe/London');
+        const status = getStatusWithUntil(openingTimes, moment);
+        it('isOpen should be false', () => {
+          expect(status.isOpen).to.equal(false);
+        });
+        it('until should be next open', () => {
+          momentsShouldBeSame(status.until, getMoment('monday', 9, 0, 'Europe/London'));
+        });
+      });
+
+      describe('moment 1 minute after session start', () => {
+        const moment = getMoment('monday', 9, 1, 'Europe/London');
+        const status = getStatusWithUntil(openingTimes, moment);
+        it('isOpen should be true', () => {
+          expect(status.isOpen).to.equal(true);
+        });
+        it('until should be next closed', () => {
+          momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Europe/London'));
+        });
+      });
+
+      describe('moment at session end', () => {
+        const moment = getMoment('monday', 17, 30, 'Europe/London');
+        const status = getStatusWithUntil(openingTimes, moment);
+        it('isOpen should be false', () => {
+          expect(status.isOpen).to.equal(false);
+        });
+        it('until should be next open', () => {
+          momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Europe/London'));
+        });
+      });
+
+      describe('moment 1 minute before session end', () => {
+        const moment = getMoment('monday', 17, 29, 'Europe/London');
+        const status = getStatusWithUntil(openingTimes, moment);
+        it('isOpen should be true', () => {
+          expect(status.isOpen).to.equal(true);
+        });
+        it('until should be next closed', () => {
+          momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Europe/London'));
+        });
+      });
+
+      describe('moment 1 minute after session end', () => {
+        const moment = getMoment('monday', 17, 31, 'Europe/London');
+        const status = getStatusWithUntil(openingTimes, moment);
+        it('isOpen should be false', () => {
+          expect(status.isOpen).to.equal(false);
+        });
+        it('until should be next open', () => {
+          momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Europe/London'));
+        });
+      });
+    });
+
     describe('single session (9:00 - 17:30)', () => {
       const openingTimesJson = getRegularWorkingWeek();
       const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');

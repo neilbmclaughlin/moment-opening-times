@@ -82,7 +82,6 @@ class OpeningTimes {
   }
 
   _getOpeningTimesSessionForMoment(moment, daysLookAhead) {
-    // Get sessions for week (including yesterday for the cases where opening hours span midnight)
     let returnValue;
     for (let day = daysLookAhead - 1; day >= -1; day--) {
       const aMoment = moment.clone().add(day, 'day');
@@ -96,7 +95,7 @@ class OpeningTimes {
           to.add(1, 'day');
         }
 
-        if (moment.isBetween(from, to, null, '[]')) {
+        if (moment.isBetween(from, to, null, '[)')) {
           returnValue = { from, to };
           return returnValue;
         }
@@ -128,7 +127,7 @@ class OpeningTimes {
   }
 
   _getDateInSessionFinder(moment) {
-    return (session) => (moment.isBetween(session.from, session.to, null, '[]'));
+    return (session) => (moment.isBetween(session.from, session.to, null, '[)'));
   }
 
   _getDateBeforeSessionFinder(moment) {
