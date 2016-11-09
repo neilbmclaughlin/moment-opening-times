@@ -34,7 +34,7 @@
   "scripts": {
     "test": "TZ=GMT mocha",
     "watch-test": "npm run test -- --watch --reporter min",
-    "lint": "eslint --ext .js,.json .",
+    "lint": "eslint --ext .js,.json --max-warnings 0 .",
     "generate-coverage": "istanbul cover _mocha -- --recursive test",
     "check-coverage": "istanbul check-coverage --config .istanbul.yml",
     "upload-coverage": "cat ./coverage/lcov.info | coveralls"
