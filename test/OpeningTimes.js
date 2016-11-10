@@ -134,9 +134,9 @@ describe('OpeningTimes', () => {
     describe('returned status value', () => {
       const openingTimesJson = getRegularWorkingWeek();
       const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
-      const moment = getMoment('monday', 11, 30, 'Europe/London');
 
       describe('default values', () => {
+        const moment = getMoment('monday', 11, 30, 'Europe/London');
         const status = openingTimes.getStatus(moment);
         it('isOpen should be populated', () => {
           expect(status.isOpen).to.not.equal(undefined);
@@ -144,21 +144,46 @@ describe('OpeningTimes', () => {
         it('moment should be populated', () => {
           expect(status.moment).to.not.equal(undefined);
         });
-        it('until should not be populated', () => {
-          expect(status.until).to.equal(undefined);
+        it('nextOpen should not be populated', () => {
+          expect(status.nextOpen).to.equal(undefined);
+        });
+        it('nextClosed should not be populated', () => {
+          expect(status.nextOpen).to.equal(undefined);
         });
       });
 
-      describe('passed until option', () => {
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('isOpen should be populated', () => {
-          expect(status.isOpen).to.not.equal(undefined);
+      describe('passed extended option', () => {
+        describe('when open', () => {
+          const moment = getMoment('monday', 11, 30, 'Europe/London');
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be populated', () => {
+            expect(status.isOpen).to.not.equal(undefined);
+          });
+          it('moment should be populated', () => {
+            expect(status.moment).to.not.equal(undefined);
+          });
+          it('nextOpen should not be populated', () => {
+            expect(status.nextOpen).to.equal(undefined);
+          });
+          it('nextClosed should be populated', () => {
+            expect(status.nextClosed).to.not.equal(undefined);
+          });
         });
-        it('moment should be populated', () => {
-          expect(status.moment).to.not.equal(undefined);
-        });
-        it('until should be populated', () => {
-          expect(status.until).to.not.equal(undefined);
+        describe('when closed', () => {
+          const moment = getMoment('monday', 7, 30, 'Europe/London');
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be populated', () => {
+            expect(status.isOpen).to.not.equal(undefined);
+          });
+          it('moment should be populated', () => {
+            expect(status.moment).to.not.equal(undefined);
+          });
+          it('nextOpen should be populated', () => {
+            expect(status.nextOpen).to.not.equal(undefined);
+          });
+          it('nextClosed should not be populated', () => {
+            expect(status.nextClosed).to.equal(undefined);
+          });
         });
       });
     });
@@ -169,67 +194,85 @@ describe('OpeningTimes', () => {
 
       describe('moment at session start', () => {
         const moment = getMoment('monday', 9, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
+        const status = openingTimes.getStatus(moment, { next: true });
         it('isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
-        it('until should be next closed', () => {
-          momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Europe/London'));
+        it('nextClosed should be next closed', () => {
+          momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
+        });
+        it('nextOpen should be undefined', () => {
+          expect(status.nextOpen).to.equal(undefined);
         });
       });
 
       describe('moment 1 minute before session start', () => {
         const moment = getMoment('monday', 8, 59, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
+        const status = openingTimes.getStatus(moment, { next: true });
         it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('until should be next open', () => {
-          momentsShouldBeSame(status.until, getMoment('monday', 9, 0, 'Europe/London'));
+        it('nextOpen should be next open', () => {
+          momentsShouldBeSame(status.nextOpen, getMoment('monday', 9, 0, 'Europe/London'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
 
       describe('moment 1 minute after session start', () => {
         const moment = getMoment('monday', 9, 1, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
+        const status = openingTimes.getStatus(moment, { next: true });
         it('isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
-        it('until should be next closed', () => {
-          momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Europe/London'));
+        it('nextClosed should be next closed', () => {
+          momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
+        });
+        it('nextOpen should be undefined', () => {
+          expect(status.nextOpen).to.equal(undefined);
         });
       });
 
       describe('moment at session end', () => {
         const moment = getMoment('monday', 17, 30, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
+        const status = openingTimes.getStatus(moment, { next: true });
         it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('until should be next open', () => {
-          momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Europe/London'));
+        it('nextOpen should be next open', () => {
+          momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
 
       describe('moment 1 minute before session end', () => {
         const moment = getMoment('monday', 17, 29, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
+        const status = openingTimes.getStatus(moment, { next: true });
         it('isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
-        it('until should be next closed', () => {
-          momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Europe/London'));
+        it('nextClosed should be next closed', () => {
+          momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
+        });
+        it('nextOpen should be undefined', () => {
+          expect(status.nextOpen).to.equal(undefined);
         });
       });
 
       describe('moment 1 minute after session end', () => {
         const moment = getMoment('monday', 17, 31, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
+        const status = openingTimes.getStatus(moment, { next: true });
         it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('until should be next open', () => {
-          momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Europe/London'));
+        it('nextOpen should be next open', () => {
+          momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
     });
@@ -240,23 +283,29 @@ describe('OpeningTimes', () => {
 
       describe('moment inside opening times', () => {
         const moment = getMoment('monday', 11, 30, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
+        const status = openingTimes.getStatus(moment, { next: true });
         it('isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
-        it('until should be next closed', () => {
-          momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Europe/London'));
+        it('nextClosed should be next closed', () => {
+          momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
+        });
+        it('nextOpen should be undefined', () => {
+          expect(status.nextOpen).to.equal(undefined);
         });
       });
 
       describe('moment outside opening times', () => {
         const moment = getMoment('monday', 18, 30, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be false', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('status.until should be next open', () => {
-          momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Europe/London'));
+        it('nextOpen should be next open', () => {
+          momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
     });
@@ -267,56 +316,71 @@ describe('OpeningTimes', () => {
 
       describe('moment inside lunch time', () => {
         const moment = getMoment('monday', 13, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be false', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('status.until should be start of afternoon session', () => {
-          momentsShouldBeSame(status.until, getMoment('monday', 13, 30, 'Europe/London'));
+        it('nextOpen should be start of afternoon session', () => {
+          momentsShouldBeSame(status.nextOpen, getMoment('monday', 13, 30, 'Europe/London'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
 
       describe('moment during the morning session', () => {
         const moment = getMoment('monday', 10, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be true', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
-        it('status.until should be end of morning session', () => {
-          momentsShouldBeSame(status.until, getMoment('monday', 12, 30, 'Europe/London'));
+        it('nextClosed should be end of morning session', () => {
+          momentsShouldBeSame(status.nextClosed, getMoment('monday', 12, 30, 'Europe/London'));
+        });
+        it('nextOpen should be undefined', () => {
+          expect(status.nextOpen).to.equal(undefined);
         });
       });
 
       describe('moment during the afternoon session', () => {
         const moment = getMoment('monday', 14, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be true', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
-        it('status.until should be end of afternoon session', () => {
-          momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Europe/London'));
+        it('nextClosed should be end of afternoon session', () => {
+          momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
+        });
+        it('nextOpen should be undefined', () => {
+          expect(status.nextOpen).to.equal(undefined);
         });
       });
 
       describe('moment after the afternoon session', () => {
         const moment = getMoment('monday', 18, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be false', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('status.until should be the start of tomorrows morning session', () => {
-          momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Europe/London'));
+        it('nextOpen should be the start of tomorrows morning session', () => {
+          momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
 
       describe('moment before the morning session', () => {
         const moment = getMoment('monday', 8, 0, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be false', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('status.until should be the start of the morning session', () => {
-          momentsShouldBeSame(status.until, getMoment('monday', 9, 0, 'Europe/London'));
+        it('nextOpen should be the start of the morning session', () => {
+          momentsShouldBeSame(status.nextOpen, getMoment('monday', 9, 0, 'Europe/London'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
     });
@@ -326,12 +390,15 @@ describe('OpeningTimes', () => {
         const openingTimesJson = getClosedAllWeek();
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('monday', 12, 40, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be false', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('status.until should be undefined', () => {
-          expect(status.until).to.equal(undefined);
+        it('nextOpen should be undefined', () => {
+          expect(status.nextOpen).to.equal(undefined);
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
 
@@ -340,12 +407,15 @@ describe('OpeningTimes', () => {
         openingTimesJson.monday = [];
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('monday', 12, 40, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be false', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('status.until should be start of tomorrows morning session', () => {
-          momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Europe/London'));
+        it('nextOpen should be start of tomorrows morning session', () => {
+          momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
 
@@ -355,17 +425,20 @@ describe('OpeningTimes', () => {
         openingTimesJson.sunday = [];
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('friday', 18, 30, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be false', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('status.until should be start of mondays morning session', () => {
+        it('nextOpen should be start of mondays morning session', () => {
           const expectedOpeningDateTime =
             new Moment(moment)
             .add(3, 'days')
             .hours(9)
             .minutes(0);
-          momentsShouldBeSame(status.until, expectedOpeningDateTime);
+          momentsShouldBeSame(status.nextOpen, expectedOpeningDateTime);
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
 
@@ -377,12 +450,15 @@ describe('OpeningTimes', () => {
           ]);
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('monday', 21, 30, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be true', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
-        it('status.until should be midnight', () => {
-          momentsShouldBeSame(status.until, getMoment('tuesday', 0, 0, 'Europe/London'));
+        it('nextClosed should be midnight', () => {
+          momentsShouldBeSame(status.nextClosed, getMoment('tuesday', 0, 0, 'Europe/London'));
+        });
+        it('nextOpen should be undefined', () => {
+          expect(status.nextOpen).to.equal(undefined);
         });
       });
     });
@@ -394,25 +470,31 @@ describe('OpeningTimes', () => {
       describe('moment after midnight but before closing', () => {
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('tuesday', 0, 55, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be true', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be true', () => {
           expect(status.isOpen).to.equal(true);
         });
-        it('status.until should be 1:00 am', () => {
+        it('nextClosed should be 1:00 am', () => {
           expect(status.isOpen).to.equal(true);
-          momentsShouldBeSame(status.until, getMoment('tuesday', 1, 0, 'Europe/London'));
+          momentsShouldBeSame(status.nextClosed, getMoment('tuesday', 1, 0, 'Europe/London'));
+        });
+        it('nextOpen should be undefined', () => {
+          expect(status.nextOpen).to.equal(undefined);
         });
       });
 
       describe('moment after midnight and after closing', () => {
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('tuesday', 1, 5, 'Europe/London');
-        const status = openingTimes.getStatus(moment, { until: true });
-        it('status.isOpen should be false', () => {
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('status.until should be start of tomorrows morning session', () => {
-          momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Europe/London'));
+        it('nextOpen should be start of tomorrows morning session', () => {
+          momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
     });
@@ -424,14 +506,17 @@ describe('OpeningTimes', () => {
 
         describe('8 am UTC time', () => {
           const moment = getMoment('monday', 8, 0, 'UTC');
-          const status = openingTimes.getStatus(moment, { until: true });
-          it('status.isOpen should be false', () => {
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be false', () => {
             expect(status.isOpen).to.equal(true);
           });
-          it('status.until should be end of todays session in time zone of opening times', () => {
+          it('nextClosed should be end of todays session in time zone of opening times', () => {
             // TODO: consider if getStatus should return time in the timezone of the moment
             // passed to getStatus
-            momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Europe/London'));
+            momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
+          });
+          it('nextOpen should be undefined', () => {
+            expect(status.nextOpen).to.equal(undefined);
           });
         });
       });
@@ -442,25 +527,31 @@ describe('OpeningTimes', () => {
 
         describe('8 am Europe/London time', () => {
           const moment = getMoment('monday', 8, 0, 'Europe/London');
-          const status = openingTimes.getStatus(moment, { until: true });
-          it('status.isOpen should be true', () => {
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
-          it('status.until should be end of todays session in TZ of opening times', () => {
+          it('nextClosed should be end of todays session in TZ of opening times', () => {
             // TODO: consider if getStatus should return time in the timezone of the moment
             // passed to getStatus
-            momentsShouldBeSame(status.until, getMoment('monday', 17, 30, 'Asia/Tokyo'));
+            momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Asia/Tokyo'));
+          });
+          it('nextOpen should be undefined', () => {
+            expect(status.nextOpen).to.equal(undefined);
           });
         });
 
         describe('11 am Europe/London time', () => {
           const moment = getMoment('monday', 11, 0, 'Europe/London');
-          const status = openingTimes.getStatus(moment, { until: true });
-          it('status.isOpen should be false', () => {
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
-          it('status.until should be start of tomorrows session in TZ of opening times', () => {
-            momentsShouldBeSame(status.until, getMoment('tuesday', 9, 0, 'Asia/Tokyo'));
+          it('nextOpen should be start of tomorrows session in TZ of opening times', () => {
+            momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Asia/Tokyo'));
+          });
+          it('nextClosed should be undefined', () => {
+            expect(status.nextClosed).to.equal(undefined);
           });
         });
       });
@@ -476,12 +567,15 @@ describe('OpeningTimes', () => {
         };
         const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
         const status =
-          openingTimes.getStatus(new Moment('2016-08-29T10:55:00+01:00'), { until: true });
-        it('status.isOpen should be false', () => {
+          openingTimes.getStatus(new Moment('2016-08-29T10:55:00+01:00'), { next: true });
+        it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('status.until should be start of tomorrows session', () => {
-          momentsShouldBeSame(status.until, new Moment('2016-08-30T09:00:00+01:00'));
+        it('nextOpen should be start of tomorrows session', () => {
+          momentsShouldBeSame(status.nextOpen, new Moment('2016-08-30T09:00:00+01:00'));
+        });
+        it('nextClosed should be undefined', () => {
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
 
@@ -496,34 +590,43 @@ describe('OpeningTimes', () => {
 
         describe('moment during the alteration', () => {
           const moment = new Moment('2016-08-29T12:30:00+01:00');
-          const status = openingTimes.getStatus(moment, { until: true });
-          it('status.isOpen should be true', () => {
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
-          it('status.until should be end of afternoon session', () => {
-            momentsShouldBeSame(status.until, new Moment('2016-08-29T16:30:00+01:00'));
+          it('nextClosed should be end of afternoon session', () => {
+            momentsShouldBeSame(status.nextClosed, new Moment('2016-08-29T16:30:00+01:00'));
+          });
+          it('nextOpen should be undefined', () => {
+            expect(status.nextOpen).to.equal(undefined);
           });
         });
 
         describe('moment after the alteration', () => {
           const moment = new Moment('2016-08-29T16:35:00+01:00');
-          const status = openingTimes.getStatus(moment, { until: true });
-          it('status.isOpen should be false', () => {
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
-          it('status.until should be the start of tomorrows morning session', () => {
-            momentsShouldBeSame(status.until, new Moment('2016-08-30T09:00:00+01:00'));
+          it('nextOpen should be the start of tomorrows morning session', () => {
+            momentsShouldBeSame(status.nextOpen, new Moment('2016-08-30T09:00:00+01:00'));
+          });
+          it('nextClosed should be undefined', () => {
+            expect(status.nextClosed).to.equal(undefined);
           });
         });
 
         describe('moment before the alteration', () => {
           const moment = new Moment('2016-08-29T10:55:00+01:00');
-          const status = openingTimes.getStatus(moment, { until: true });
-          it('status.isOpen should be false', () => {
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
-          it('status.until should be the start of the morning session', () => {
-            momentsShouldBeSame(status.until, new Moment('2016-08-29T11:00:00+01:00'));
+          it('nextOpen should be the start of the morning session', () => {
+            momentsShouldBeSame(status.nextOpen, new Moment('2016-08-29T11:00:00+01:00'));
+          });
+          it('nextClosed should be undefined', () => {
+            expect(status.nextClosed).to.equal(undefined);
           });
         });
       });
@@ -539,34 +642,43 @@ describe('OpeningTimes', () => {
 
         describe('moment before midnight and during the alteration', () => {
           const moment = new Moment('2016-08-29T11:30:00+01:00');
-          const status = openingTimes.getStatus(moment, { until: true });
-          it('status.isOpen should be true', () => {
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
-          it('status.until should be end of session', () => {
-            momentsShouldBeSame(status.until, new Moment('2016-08-30T01:30:00+01:00'));
+          it('nextClosed should be end of session', () => {
+            momentsShouldBeSame(status.nextClosed, new Moment('2016-08-30T01:30:00+01:00'));
+          });
+          it('nextOpen should be undefined', () => {
+            expect(status.nextOpen).to.equal(undefined);
           });
         });
 
         describe('moment after midnight and during the alteration', () => {
           const moment = new Moment('2016-08-30T01:25:00+01:00');
-          const status = openingTimes.getStatus(moment, { until: true });
-          it('status.isOpen should be true', () => {
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
-          it('status.until should be end of session', () => {
-            momentsShouldBeSame(status.until, new Moment('2016-08-30T01:30:00+01:00'));
+          it('nextClosed should be end of session', () => {
+            momentsShouldBeSame(status.nextClosed, new Moment('2016-08-30T01:30:00+01:00'));
+          });
+          it('nextOpen should be undefined', () => {
+            expect(status.nextOpen).to.equal(undefined);
           });
         });
 
         describe('moment after midnight and after the alteration', () => {
           const moment = new Moment('2016-08-30T01:35:00+01:00');
-          const status = openingTimes.getStatus(moment, { until: true });
-          it('status.isOpen should be false', () => {
+          const status = openingTimes.getStatus(moment, { next: true });
+          it('isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
-          it('status.until should be start of tomorrows session', () => {
-            momentsShouldBeSame(status.until, new Moment('2016-08-30T09:00:00+01:00'));
+          it('nextOpen should be start of tomorrows session', () => {
+            momentsShouldBeSame(status.nextOpen, new Moment('2016-08-30T09:00:00+01:00'));
+          });
+          it('nextClosed should be undefined', () => {
+            expect(status.nextClosed).to.equal(undefined);
           });
         });
       });

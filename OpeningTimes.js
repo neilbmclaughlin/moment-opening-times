@@ -167,8 +167,12 @@ class OpeningTimes {
 
     const session = this._getOpeningTimesSessionForMoment(moment, 1);
     returnValue.isOpen = (session !== undefined);
-    if (options.until) {
-      returnValue.until = (session) ? session.to : this._nextOpen(moment);
+    if (options.next) {
+      if (returnValue.isOpen) {
+        returnValue.nextClosed = session.to;
+      } else {
+        returnValue.nextOpen = this._nextOpen(moment);
+      }
     }
 
     return returnValue;
