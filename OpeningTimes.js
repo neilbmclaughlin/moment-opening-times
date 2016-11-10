@@ -152,7 +152,7 @@ class OpeningTimes {
   }
 
   _nextOpen(moment) {
-    const allSessions = this._getOpenSessions(moment, [-1, 0, 1, 2, 3, 4, 5, 6]);
+    const allSessions = this._getOpenSessions(moment, [0, 1, 2, 3, 4, 5, 6]);
     if (this._findMomentInSessions(moment, allSessions)) {
       return moment;
     }
@@ -170,7 +170,9 @@ class OpeningTimes {
     if (options.next) {
       if (returnValue.isOpen) {
         returnValue.nextClosed = session.to;
+        returnValue.nextOpen = moment;
       } else {
+        returnValue.nextClosed = moment;
         returnValue.nextOpen = this._nextOpen(moment);
       }
     }

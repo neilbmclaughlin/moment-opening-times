@@ -148,42 +148,24 @@ describe('OpeningTimes', () => {
           expect(status.nextOpen).to.equal(undefined);
         });
         it('nextClosed should not be populated', () => {
-          expect(status.nextOpen).to.equal(undefined);
+          expect(status.nextClosed).to.equal(undefined);
         });
       });
 
       describe('passed extended option', () => {
-        describe('when open', () => {
-          const moment = getMoment('monday', 11, 30, 'Europe/London');
-          const status = openingTimes.getStatus(moment, { next: true });
-          it('isOpen should be populated', () => {
-            expect(status.isOpen).to.not.equal(undefined);
-          });
-          it('moment should be populated', () => {
-            expect(status.moment).to.not.equal(undefined);
-          });
-          it('nextOpen should not be populated', () => {
-            expect(status.nextOpen).to.equal(undefined);
-          });
-          it('nextClosed should be populated', () => {
-            expect(status.nextClosed).to.not.equal(undefined);
-          });
+        const moment = getMoment('monday', 11, 30, 'Europe/London');
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be populated', () => {
+          expect(status.isOpen).to.not.equal(undefined);
         });
-        describe('when closed', () => {
-          const moment = getMoment('monday', 7, 30, 'Europe/London');
-          const status = openingTimes.getStatus(moment, { next: true });
-          it('isOpen should be populated', () => {
-            expect(status.isOpen).to.not.equal(undefined);
-          });
-          it('moment should be populated', () => {
-            expect(status.moment).to.not.equal(undefined);
-          });
-          it('nextOpen should be populated', () => {
-            expect(status.nextOpen).to.not.equal(undefined);
-          });
-          it('nextClosed should not be populated', () => {
-            expect(status.nextClosed).to.equal(undefined);
-          });
+        it('moment should be populated', () => {
+          expect(status.moment).to.not.equal(undefined);
+        });
+        it('nextOpen should be populated', () => {
+          expect(status.nextOpen).to.not.equal(undefined);
+        });
+        it('nextClosed should be populated', () => {
+          expect(status.nextClosed).to.not.equal(undefined);
         });
       });
     });
@@ -201,8 +183,8 @@ describe('OpeningTimes', () => {
         it('nextClosed should be next closed', () => {
           momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
         });
-        it('nextOpen should be undefined', () => {
-          expect(status.nextOpen).to.equal(undefined);
+        it('nextOpen should be passed moment', () => {
+          momentsShouldBeSame(status.nextOpen, moment);
         });
       });
 
@@ -215,8 +197,8 @@ describe('OpeningTimes', () => {
         it('nextOpen should be next open', () => {
           momentsShouldBeSame(status.nextOpen, getMoment('monday', 9, 0, 'Europe/London'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
 
@@ -229,8 +211,8 @@ describe('OpeningTimes', () => {
         it('nextClosed should be next closed', () => {
           momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
         });
-        it('nextOpen should be undefined', () => {
-          expect(status.nextOpen).to.equal(undefined);
+        it('nextOpen should be passed moment', () => {
+          momentsShouldBeSame(status.nextOpen, moment);
         });
       });
 
@@ -243,8 +225,8 @@ describe('OpeningTimes', () => {
         it('nextOpen should be next open', () => {
           momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
 
@@ -257,8 +239,8 @@ describe('OpeningTimes', () => {
         it('nextClosed should be next closed', () => {
           momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
         });
-        it('nextOpen should be undefined', () => {
-          expect(status.nextOpen).to.equal(undefined);
+        it('nextOpen should be passed moment', () => {
+          momentsShouldBeSame(status.nextOpen, moment);
         });
       });
 
@@ -271,8 +253,8 @@ describe('OpeningTimes', () => {
         it('nextOpen should be next open', () => {
           momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
     });
@@ -290,8 +272,8 @@ describe('OpeningTimes', () => {
         it('nextClosed should be next closed', () => {
           momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
         });
-        it('nextOpen should be undefined', () => {
-          expect(status.nextOpen).to.equal(undefined);
+        it('nextOpen should be passed moment', () => {
+          momentsShouldBeSame(status.nextOpen, moment);
         });
       });
 
@@ -304,8 +286,8 @@ describe('OpeningTimes', () => {
         it('nextOpen should be next open', () => {
           momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
     });
@@ -323,8 +305,8 @@ describe('OpeningTimes', () => {
         it('nextOpen should be start of afternoon session', () => {
           momentsShouldBeSame(status.nextOpen, getMoment('monday', 13, 30, 'Europe/London'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
 
@@ -337,8 +319,8 @@ describe('OpeningTimes', () => {
         it('nextClosed should be end of morning session', () => {
           momentsShouldBeSame(status.nextClosed, getMoment('monday', 12, 30, 'Europe/London'));
         });
-        it('nextOpen should be undefined', () => {
-          expect(status.nextOpen).to.equal(undefined);
+        it('nextOpen should be passed moment', () => {
+          momentsShouldBeSame(status.nextOpen, moment);
         });
       });
 
@@ -351,8 +333,8 @@ describe('OpeningTimes', () => {
         it('nextClosed should be end of afternoon session', () => {
           momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
         });
-        it('nextOpen should be undefined', () => {
-          expect(status.nextOpen).to.equal(undefined);
+        it('nextOpen should be passed moment', () => {
+          momentsShouldBeSame(status.nextOpen, moment);
         });
       });
 
@@ -365,8 +347,8 @@ describe('OpeningTimes', () => {
         it('nextOpen should be the start of tomorrows morning session', () => {
           momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
 
@@ -379,8 +361,8 @@ describe('OpeningTimes', () => {
         it('nextOpen should be the start of the morning session', () => {
           momentsShouldBeSame(status.nextOpen, getMoment('monday', 9, 0, 'Europe/London'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
     });
@@ -394,11 +376,11 @@ describe('OpeningTimes', () => {
         it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
-        it('nextOpen should be undefined', () => {
+        it('nextOpen should be passed undefined', () => {
           expect(status.nextOpen).to.equal(undefined);
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
 
@@ -414,8 +396,8 @@ describe('OpeningTimes', () => {
         it('nextOpen should be start of tomorrows morning session', () => {
           momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
 
@@ -437,8 +419,8 @@ describe('OpeningTimes', () => {
             .minutes(0);
           momentsShouldBeSame(status.nextOpen, expectedOpeningDateTime);
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
 
@@ -457,8 +439,8 @@ describe('OpeningTimes', () => {
         it('nextClosed should be midnight', () => {
           momentsShouldBeSame(status.nextClosed, getMoment('tuesday', 0, 0, 'Europe/London'));
         });
-        it('nextOpen should be undefined', () => {
-          expect(status.nextOpen).to.equal(undefined);
+        it('nextOpen should be passed moment', () => {
+          momentsShouldBeSame(status.nextOpen, moment);
         });
       });
     });
@@ -478,8 +460,8 @@ describe('OpeningTimes', () => {
           expect(status.isOpen).to.equal(true);
           momentsShouldBeSame(status.nextClosed, getMoment('tuesday', 1, 0, 'Europe/London'));
         });
-        it('nextOpen should be undefined', () => {
-          expect(status.nextOpen).to.equal(undefined);
+        it('nextOpen should be passed moment', () => {
+          momentsShouldBeSame(status.nextOpen, moment);
         });
       });
 
@@ -493,8 +475,8 @@ describe('OpeningTimes', () => {
         it('nextOpen should be start of tomorrows morning session', () => {
           momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Europe/London'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
     });
@@ -515,8 +497,8 @@ describe('OpeningTimes', () => {
             // passed to getStatus
             momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
           });
-          it('nextOpen should be undefined', () => {
-            expect(status.nextOpen).to.equal(undefined);
+          it('nextOpen should be passed moment', () => {
+            momentsShouldBeSame(status.nextOpen, moment);
           });
         });
       });
@@ -536,8 +518,8 @@ describe('OpeningTimes', () => {
             // passed to getStatus
             momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Asia/Tokyo'));
           });
-          it('nextOpen should be undefined', () => {
-            expect(status.nextOpen).to.equal(undefined);
+          it('nextOpen should be passed moment', () => {
+            momentsShouldBeSame(status.nextOpen, moment);
           });
         });
 
@@ -550,8 +532,8 @@ describe('OpeningTimes', () => {
           it('nextOpen should be start of tomorrows session in TZ of opening times', () => {
             momentsShouldBeSame(status.nextOpen, getMoment('tuesday', 9, 0, 'Asia/Tokyo'));
           });
-          it('nextClosed should be undefined', () => {
-            expect(status.nextClosed).to.equal(undefined);
+          it('nextClosed should be passed moment', () => {
+            momentsShouldBeSame(status.nextClosed, moment);
           });
         });
       });
@@ -565,17 +547,18 @@ describe('OpeningTimes', () => {
           '2016-01-01': [],
           '2016-08-29': [],
         };
+        const moment = new Moment('2016-08-29T10:55:00+01:00');
         const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
         const status =
-          openingTimes.getStatus(new Moment('2016-08-29T10:55:00+01:00'), { next: true });
+          openingTimes.getStatus(moment, { next: true });
         it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });
         it('nextOpen should be start of tomorrows session', () => {
           momentsShouldBeSame(status.nextOpen, new Moment('2016-08-30T09:00:00+01:00'));
         });
-        it('nextClosed should be undefined', () => {
-          expect(status.nextClosed).to.equal(undefined);
+        it('nextClosed should be passed moment', () => {
+          momentsShouldBeSame(status.nextClosed, moment);
         });
       });
 
@@ -597,8 +580,8 @@ describe('OpeningTimes', () => {
           it('nextClosed should be end of afternoon session', () => {
             momentsShouldBeSame(status.nextClosed, new Moment('2016-08-29T16:30:00+01:00'));
           });
-          it('nextOpen should be undefined', () => {
-            expect(status.nextOpen).to.equal(undefined);
+          it('nextOpen should be passed moment', () => {
+            momentsShouldBeSame(status.nextOpen, moment);
           });
         });
 
@@ -611,8 +594,8 @@ describe('OpeningTimes', () => {
           it('nextOpen should be the start of tomorrows morning session', () => {
             momentsShouldBeSame(status.nextOpen, new Moment('2016-08-30T09:00:00+01:00'));
           });
-          it('nextClosed should be undefined', () => {
-            expect(status.nextClosed).to.equal(undefined);
+          it('nextClosed should be passed moment', () => {
+            momentsShouldBeSame(status.nextClosed, moment);
           });
         });
 
@@ -625,8 +608,8 @@ describe('OpeningTimes', () => {
           it('nextOpen should be the start of the morning session', () => {
             momentsShouldBeSame(status.nextOpen, new Moment('2016-08-29T11:00:00+01:00'));
           });
-          it('nextClosed should be undefined', () => {
-            expect(status.nextClosed).to.equal(undefined);
+          it('nextClosed should be passed moment', () => {
+            momentsShouldBeSame(status.nextClosed, moment);
           });
         });
       });
@@ -649,8 +632,8 @@ describe('OpeningTimes', () => {
           it('nextClosed should be end of session', () => {
             momentsShouldBeSame(status.nextClosed, new Moment('2016-08-30T01:30:00+01:00'));
           });
-          it('nextOpen should be undefined', () => {
-            expect(status.nextOpen).to.equal(undefined);
+          it('nextOpen should be passed moment', () => {
+            momentsShouldBeSame(status.nextOpen, moment);
           });
         });
 
@@ -663,8 +646,8 @@ describe('OpeningTimes', () => {
           it('nextClosed should be end of session', () => {
             momentsShouldBeSame(status.nextClosed, new Moment('2016-08-30T01:30:00+01:00'));
           });
-          it('nextOpen should be undefined', () => {
-            expect(status.nextOpen).to.equal(undefined);
+          it('nextOpen should be passed moment', () => {
+            momentsShouldBeSame(status.nextOpen, moment);
           });
         });
 
@@ -677,8 +660,8 @@ describe('OpeningTimes', () => {
           it('nextOpen should be start of tomorrows session', () => {
             momentsShouldBeSame(status.nextOpen, new Moment('2016-08-30T09:00:00+01:00'));
           });
-          it('nextClosed should be undefined', () => {
-            expect(status.nextClosed).to.equal(undefined);
+          it('nextClosed should be passed moment', () => {
+            momentsShouldBeSame(status.nextClosed, moment);
           });
         });
       });
