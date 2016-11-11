@@ -55,21 +55,6 @@ class OpeningTimes {
     return this._getTime(moment, time.hours, time.minutes).tz(this._timeZone);
   }
 
-  _timeInRange(referenceDate, openingHoursDate, open, close) {
-    const openTime = this._getTimeFromString(open);
-    const closeTime = this._getTimeFromString(close);
-
-    const start = this._getTime(openingHoursDate, openTime.hours, openTime.minutes);
-    let end = this._getTime(openingHoursDate, closeTime.hours, closeTime.minutes);
-
-    if (end < start) {
-      // time spans midnight
-      end = end.add(1, 'day');
-    }
-
-    return referenceDate.isBetween(start, end, null, '[]');
-  }
-
   _isClosedAllDay(daysOpeningTimes) {
     return (daysOpeningTimes.length === 0);
   }
@@ -96,9 +81,32 @@ class OpeningTimes {
     return this._openingTimes[this._getDayName(moment)];
   }
 
-  _getOpenSessions(moment) {
+  _getOpeningTimesSessionForMoment(moment, daysLookAhead) {
+    let returnValue;
+    for (let day = daysLookAhead - 1; day >= -1; day--) {
+      const aMoment = moment.clone().add(day, 'day');
+      const openingTimes = this._getOpeningTimesForDate(aMoment);
+      for (let j = 0; j < openingTimes.length; j++) {
+        const t = openingTimes[j];
+        const from = this._createDateTime(aMoment, t.opens);
+        const to = this._createDateTime(aMoment, t.closes);
+
+        if (to < from) {
+          to.add(1, 'day');
+        }
+
+        if (moment.isBetween(from, to, null, '[)')) {
+          returnValue = { from, to };
+          return returnValue;
+        }
+      }
+    }
+    return returnValue;
+  }
+
+  _getOpenSessions(moment, days) {
     // Get sessions for week (including yesterday for the cases where opening hours span midnight)
-    return [-1, 0, 1, 2, 3, 4, 5, 6].map((d) => {
+    return days.map((d) => {
       const aDate = moment.clone().add(d, 'day');
       const openingTimes = this._getOpeningTimesForDate(aDate);
       return openingTimes
@@ -110,16 +118,13 @@ class OpeningTimes {
             to.add(1, 'day');
           }
 
-          return {
-            from: from.format(),
-            to: to.format(),
-          };
+          return { from, to };
         });
     });
   }
 
   _getDateInSessionFinder(moment) {
-    return (session) => (moment.isBetween(session.from, session.to, null, '[]'));
+    return (session) => (moment.isBetween(session.from, session.to, null, '[)'));
   }
 
   _getDateBeforeSessionFinder(moment) {
@@ -137,82 +142,39 @@ class OpeningTimes {
 
     if (nextDay) {
       const nextSession = nextDay.find(this._getDateBeforeSessionFinder(moment));
-      return new Moment(nextSession.from).tz(this._timeZone);
+      return nextSession.from.tz(this._timeZone);
     }
 
     return undefined;
   }
 
-  _findNextClosingTime(moment, sessions) {
-    const currentDay = sessions
-      .find((day) => (day.some(this._getDateInSessionFinder(moment))));
-
-    if (currentDay) {
-      const thisSession = currentDay.find(this._getDateInSessionFinder(moment));
-      return new Moment(thisSession.to).tz(this._timeZone);
-    }
-
-    return undefined;
-  }
-  /* Public API */
-
-  isOpen(moment) {
-    const sessions = this._getOpenSessions(moment);
-    return this._findMomentInSessions(moment, sessions);
-  }
-
-  nextOpen(moment) {
-    const allSessions = this._getOpenSessions(moment);
+  _nextOpen(moment) {
+    const allSessions = this._getOpenSessions(moment, [0, 1, 2, 3, 4, 5, 6]);
     if (this._findMomentInSessions(moment, allSessions)) {
       return moment;
     }
     return this._findNextOpeningTime(moment, allSessions);
   }
 
-  nextClosed(moment) {
-    const allSessions = this._getOpenSessions(moment);
-    if (!this._findMomentInSessions(moment, allSessions)) {
-      return moment;
+
+  /* Public API */
+
+  getStatus(moment, options = {}) {
+    const returnValue = { moment };
+
+    const session = this._getOpeningTimesSessionForMoment(moment, 1);
+    returnValue.isOpen = (session !== undefined);
+    if (options.next) {
+      if (returnValue.isOpen) {
+        returnValue.nextClosed = session.to;
+        returnValue.nextOpen = moment;
+      } else {
+        returnValue.nextClosed = moment;
+        returnValue.nextOpen = this._nextOpen(moment);
+      }
     }
 
-    return this._findNextClosingTime(moment, allSessions);
-  }
-
-  getOpeningHoursMessage(moment) {
-    if (this.isOpen(moment)) {
-      const closedNext = this.nextClosed(moment);
-      const closedTime = closedNext.format('h:mm a');
-      const closedDay = closedNext.calendar(moment, {
-        sameDay: '[today]',
-        nextDay: '[tomorrow]',
-        nextWeek: 'dddd',
-        lastDay: '[yesterday]',
-        lastWeek: '[last] dddd',
-        sameElse: 'DD/MM/YYYY',
-      });
-      return (
-        ((closedDay === 'tomorrow' && closedTime === '12:00 am')
-          || (closedDay === 'today' && closedTime === '11:59 pm')) ?
-        'Open until midnight' :
-        `Open until ${closedTime} ${closedDay}`);
-    }
-    const openNext = this.nextOpen(moment);
-    if (!openNext) {
-      return 'Call for opening times.';
-    }
-    const timeUntilOpen = openNext.diff(moment, 'minutes');
-    const openDay = openNext.calendar(moment, {
-      sameDay: '[today]',
-      nextDay: '[tomorrow]',
-      nextWeek: 'dddd',
-      lastDay: '[yesterday]',
-      lastWeek: '[last] dddd',
-      sameElse: 'DD/MM/YYYY',
-    });
-    return (
-      (timeUntilOpen <= 60) ?
-        `Opening in ${timeUntilOpen} minutes` :
-        `Closed until ${openNext.format('h:mm a')} ${openDay}`);
+    return returnValue;
   }
 
   getFormattedOpeningTimes(formatString) {
