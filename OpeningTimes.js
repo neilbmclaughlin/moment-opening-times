@@ -118,10 +118,7 @@ class OpeningTimes {
             to.add(1, 'day');
           }
 
-          return {
-            from: from.format(),
-            to: to.format(),
-          };
+          return { from, to };
         });
     });
   }
@@ -145,7 +142,7 @@ class OpeningTimes {
 
     if (nextDay) {
       const nextSession = nextDay.find(this._getDateBeforeSessionFinder(moment));
-      return new Moment(nextSession.from).tz(this._timeZone);
+      return nextSession.from.tz(this._timeZone);
     }
 
     return undefined;
