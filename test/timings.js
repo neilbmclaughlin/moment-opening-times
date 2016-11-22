@@ -26,6 +26,7 @@ describe('timings', function test() {
         }
       });
     });
+
     it('including alterations', () => {
       orgs.forEach((o) => {
         if (o.openingTimes) {
