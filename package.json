@@ -32,12 +32,12 @@
     "mocha-lcov-reporter": "^1.2.0"
   },
   "scripts": {
-    "test": "TZ=GMT mocha",
-    "watch-test": "npm run test -- --watch --reporter min",
-    "lint": "eslint --ext .js,.json --max-warnings 0 .",
-    "generate-coverage": "istanbul cover _mocha -- --recursive test",
     "check-coverage": "istanbul check-coverage --config .istanbul.yml",
-    "upload-coverage": "cat ./coverage/lcov.info | coveralls"
+    "generate-coverage": "istanbul cover _mocha -- --recursive test",
+    "lint": "eslint --ext .js,.json --max-warnings 0 .",
+    "test": "TZ=GMT mocha",
+    "upload-coverage": "cat ./coverage/lcov.info | coveralls",
+    "watch-test": "yarn run test -- --watch --reporter min"
   },
   "keywords": [
     "moment",
@@ -45,11 +45,5 @@
     "times"
   ],
   "author": "Neil McLaughlin & Steven Hunt",
-  "license": "MIT",
-  "config": {
-    "ghooks": {
-      "pre-commit": "git stash --keep-index && npm run lint && npm run test && git stash pop",
-      "post-checkout": "npm install"
-    }
-  }
+  "license": "MIT"
 }
