@@ -156,7 +156,6 @@ class OpeningTimes {
     return this._findNextOpeningTime(moment, allSessions);
   }
 
-
   /* Public API */
 
   getStatus(moment, options = {}) {
