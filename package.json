@@ -21,15 +21,15 @@
     "eslint": "^4.1.1",
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-config-nhsuk": "^0.3.0",
-    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-import": "^2.6.1",
     "eslint-plugin-json": "^1.2.0",
-    "eslint-plugin-mocha": "^4.10.1",
-    "eslint-watch": "^3.1.1",
+    "eslint-plugin-mocha": "^4.11.0",
+    "eslint-watch": "^3.1.2",
     "husky": "^0.14.2",
     "istanbul": "^0.4.3",
     "mocha": "^3.4.2",
     "mocha-lcov-reporter": "^1.2.0",
-    "snyk": "^1.34.4"
+    "snyk": "^1.36.2"
   },
   "scripts": {
     "check-coverage": "istanbul check-coverage --config .istanbul.yml",
