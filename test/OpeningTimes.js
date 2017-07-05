@@ -414,9 +414,9 @@ describe('OpeningTimes', () => {
         it('nextOpen should be start of mondays morning session', () => {
           const expectedOpeningDateTime =
             new Moment(moment)
-            .add(3, 'days')
-            .hours(9)
-            .minutes(0);
+              .add(3, 'days')
+              .hours(9)
+              .minutes(0);
           momentsShouldBeSame(status.nextOpen, expectedOpeningDateTime);
         });
         it('nextClosed should be passed moment', () => {
