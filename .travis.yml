@@ -9,3 +9,10 @@ before_script: greenkeeper-lockfile-update
 script: yarn run travis
 
 after_script: greenkeeper-lockfile-upload
+
+deploy:
+  provider: npm
+  email: $NPM_EMAIL
+  api_key: $NPM_API_KEY
+  on:
+    tags: true
