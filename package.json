@@ -1,6 +1,6 @@
 {
   "name": "moment-opening-times",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A small class to determine the status of a given moment in relation to a set of opening times",
   "repository": {
     "type": "git",
@@ -32,23 +32,23 @@
     "snyk": "^1.36.2"
   },
   "scripts": {
-    "check-coverage": "istanbul check-coverage --config .istanbul.yml",
-    "generate-coverage": "istanbul cover _mocha -- --recursive test",
-    "git-hook": "yarn lint && yarn generate-coverage && yarn check-coverage && yarn snyk -- test",
+    "coverage-check": "istanbul check-coverage --config .istanbul.yml",
+    "coverage-generate": "istanbul cover _mocha -- --recursive test",
+    "coverage-upload": "cat ./coverage/lcov.info | coveralls",
+    "git-hook": "yarn lint && yarn coverage-generate && yarn coverage-check",
     "lint": "eslint --ext .js,.json --max-warnings 0 .",
     "precommit": "yarn git-hook",
     "prepublish": "yarn git-hook",
-    "prepush": "yarn git-hook",
+    "prepush": "yarn git-hook && yarn snyk test",
     "test": "TZ=GMT mocha",
-    "travis": "yarn git-hook && yarn upload-coverage && yarn snyk -- test --org=nhsuk && yarn snyk -- monitor --org=nhsuk",
-    "upload-coverage": "cat ./coverage/lcov.info | coveralls",
-    "watch-test": "yarn test -- --watch --reporter min"
+    "test-ci": "yarn git-hook && yarn coverage-upload",
+    "test-watch": "yarn test -- --watch --reporter min"
   },
   "keywords": [
     "moment",
     "opening",
     "times"
   ],
-  "author": "Neil McLaughlin & Steven Hunt",
+  "author": "Neil McLaughlin",
   "license": "MIT"
 }
