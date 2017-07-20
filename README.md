@@ -1,6 +1,6 @@
 # moment-opening-times
 
-[![npm version](https://badge.fury.io/js/moment-opening-times.svg)](https://badge.fury.io/js/moment-opening_times)
+[![npm version](https://badge.fury.io/js/moment-opening-times.svg)](https://badge.fury.io/js/moment-opening-times)
 [![Greenkeeper badge](https://badges.greenkeeper.io/nhsuk/moment-opening-times.svg)](https://greenkeeper.io/)
 [![Build Status](https://travis-ci.org/nhsuk/moment-opening-times.svg?branch=master)](https://travis-ci.org/nhsuk/moment-opening-times)
 [![Coverage Status](https://coveralls.io/repos/github/nhsuk/moment-opening-times/badge.svg?branch=master)](https://coveralls.io/github/nhsuk/moment-opening-times?branch=master)
@@ -15,7 +15,7 @@ To install the package run:
 * npm - `npm install moment-opening-times --save`
 * yarn - `yarn add moment-opening-times`
 
-The config relies upon several other packages. These are the
+This package relies upon several other packages. These are the
 [Peer Dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/).
 To get a list of the peerDependencies run the following command:
 
@@ -33,12 +33,13 @@ the function `getStatus` is passed the current time and an optional options obje
 Currently the only valid option is a boolean field - `next`. When
 `next` set to a truthy value the returned object will contain 2 additional
 fields, `nextClosed` and `nextOpen`. Both fields are a
-[moment with a time zone](https://momentjs.com/timezone/docs/#/using-timezones/parsing-in-zone/).
+[moment with a time zone](https://momentjs.com/timezone/docs/#/using-timezones/parsing-in-zone/)
+indicating the next time the place is closed and open, respectively.
 
 ### Example usage
 
-Given the open hours of a place is represented by the following set of opening times:
-Note each day can have a maximum of 3 open sessions.
+Given the open hours of a place is represented by the following set of opening times
+(note a maximum of 3 open sessions per day is supported):
 ```js
 const openingTimes =
 {
@@ -61,7 +62,7 @@ const OpeningTimes = require('moment-opening-times');
 const now = moment();
 const openingTimesMoment = new OpeningTimes(openingTimes, 'Europe/London');
 
-const status = openingTimesMoment.getStatus(now, { next: true });
+const status = openingTimesMoment.getStatus(now);
 ```
 
 If we wanted to know whether the place was open at 23:59:59 on 31/12/2020 in
