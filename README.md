@@ -38,8 +38,7 @@ indicating the next time the place is closed and open, respectively.
 
 ### Example usage
 
-Given the open hours of a place is represented by the following set of opening times
-(note a maximum of 3 open sessions per day is supported):
+Given the open hours of a place is represented by the following set of opening times:
 ```js
 const openingTimes =
 {
