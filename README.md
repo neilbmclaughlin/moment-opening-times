@@ -1,5 +1,6 @@
 # moment-opening-times
 
+[![GitHub Release](https://img.shields.io/github/release/nhsuk/moment-opening-times.svg)](https://github.com/nhsuk/moment-opening-times/releases/latest/)
 [![npm version](https://badge.fury.io/js/moment-opening-times.svg)](https://badge.fury.io/js/moment-opening-times)
 [![Greenkeeper badge](https://badges.greenkeeper.io/nhsuk/moment-opening-times.svg)](https://greenkeeper.io/)
 [![Build Status](https://travis-ci.org/nhsuk/moment-opening-times.svg?branch=master)](https://travis-ci.org/nhsuk/moment-opening-times)
