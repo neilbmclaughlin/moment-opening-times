@@ -1,7 +1,7 @@
 const orgLimit = 1000;
 
-const OpeningTimes = require('../OpeningTimes');
-const orgs = require('./pharmacy-list').slice(0, orgLimit);
+const OpeningTimes = require('../../OpeningTimes');
+const orgs = require('../resources/pharmacy-list').slice(0, orgLimit);
 const Moment = require('moment');
 
 const timeZone = 'Europe/London';

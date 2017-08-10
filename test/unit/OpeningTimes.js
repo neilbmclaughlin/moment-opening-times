@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiMoment = require('chai-moment');
 const AssertionError = require('assert').AssertionError;
-const OpeningTimes = require('../OpeningTimes');
+const OpeningTimes = require('../../OpeningTimes');
 const Moment = require('moment');
 require('moment-timezone');
 

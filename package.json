@@ -40,11 +40,11 @@
     "coverage-generate": "istanbul cover _mocha -- --recursive test",
     "coverage-upload": "cat ./coverage/lcov.info | coveralls",
     "git-hook": "yarn lint && yarn coverage-generate && yarn coverage-check",
-    "lint": "eslint --ext .js,.json --max-warnings 0 .",
+    "lint": "eslint --ext .js --max-warnings 0 .",
     "precommit": "yarn git-hook",
     "prepublish": "yarn git-hook",
     "prepush": "yarn git-hook && yarn snyk test",
-    "test": "TZ=GMT mocha",
+    "test": "TZ=GMT mocha --recursive test/unit",
     "test-ci": "yarn git-hook && yarn coverage-upload",
     "test-watch": "yarn test -- --watch --reporter min"
   },
