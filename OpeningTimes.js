@@ -1,6 +1,7 @@
 const assert = require('assert');
 const util = require('util');
 const Moment = require('moment');
+const removePastAlterations = require('./src/lib/utils').removePastAlterations;
 require('moment-timezone');
 
 const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
@@ -21,7 +22,7 @@ class OpeningTimes {
     assert(Moment.tz.zone(timeZone), 'parameter \'timeZone\' not a valid timezone');
     this._openingTimes = openingTimes;
     this._timeZone = timeZone;
-    this._alterations = alterations;
+    this._alterations = removePastAlterations(alterations);
   }
 
   /* Private methods - you could use them but they  are not part of the API
