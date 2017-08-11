@@ -70,7 +70,7 @@ class OpeningTimes {
   }
 
   _getOpeningTimesForDate(moment) {
-    const alterations = removePastAlterations(this._alterations, moment);
+    const alterations = removePastAlterations(this._alterations, moment, this._timeZone);
     if (alterations) {
       // TODO: decide what to do if there is only >1 match
       const alterationMatch =
