@@ -1,33 +1,35 @@
-const moment = require('moment');
-
 const alterationDateKeyFormat = 'YYYY-MM-DD';
 
-function alterations(daysToChange) {
-  const dateString = moment().add(daysToChange, 'day').format(alterationDateKeyFormat);
+// eslint-disable-next-line no-underscore-dangle
+function _alterations(moment, daysToChange) {
+  const dateString = moment.clone().add(daysToChange, 'day').format(alterationDateKeyFormat);
 
   const returnValue = {};
   returnValue[dateString] = [];
   return returnValue;
 }
 
-function alterationsPast() {
-  return alterations(-1);
+function alterationsPast(moment) {
+  return _alterations(moment, -1);
 }
 
-function alterationsPresent() {
-  return alterations(0);
+function alterationsPresent(moment) {
+  return _alterations(moment, 0);
 }
 
-function alterationsFuture() {
-  return alterations(1);
+function alterationsFuture(moment) {
+  return _alterations(moment, 1);
 }
 
-function alterationsPresentAndFuture() {
-  return Object.assign({}, alterationsPresent(), alterationsFuture());
+function alterationsPresentAndFuture(moment) {
+  return Object.assign({}, alterationsPresent(moment), alterationsFuture(moment));
 }
 
-function alterationsPastPresentAndFuture() {
-  return Object.assign({}, alterationsPast(), alterationsPresent(), alterationsFuture());
+function alterationsPastPresentAndFuture(moment) {
+  return Object.assign({},
+    alterationsPast(moment),
+    alterationsPresent(moment),
+    alterationsFuture(moment));
 }
 
 module.exports = {

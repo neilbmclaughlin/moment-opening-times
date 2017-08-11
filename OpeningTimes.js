@@ -1,7 +1,7 @@
 const assert = require('assert');
 const util = require('util');
 const Moment = require('moment');
-const removePastAlterations = require('./src/lib/utils').removePastAlterations;
+const removePastAlterations = require('./src/lib/removePastAlterations');
 require('moment-timezone');
 
 const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
@@ -22,7 +22,7 @@ class OpeningTimes {
     assert(Moment.tz.zone(timeZone), 'parameter \'timeZone\' not a valid timezone');
     this._openingTimes = openingTimes;
     this._timeZone = timeZone;
-    this._alterations = removePastAlterations(alterations);
+    this._alterations = alterations;
   }
 
   /* Private methods - you could use them but they  are not part of the API
@@ -70,13 +70,14 @@ class OpeningTimes {
   }
 
   _getOpeningTimesForDate(moment) {
-    if (this._alterations) {
+    const alterations = removePastAlterations(this._alterations, moment);
+    if (alterations) {
       // TODO: decide what to do if there is only >1 match
       const alterationMatch =
-        Object.keys(this._alterations)
+        Object.keys(alterations)
           .filter(a => new Moment(a).tz(this._timeZone).isSame(moment, 'day'))[0];
       return alterationMatch ?
-        this._alterations[alterationMatch] :
+        alterations[alterationMatch] :
         this._openingTimes[this._getDayName(moment)];
     }
     return this._openingTimes[this._getDayName(moment)];
