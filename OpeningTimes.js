@@ -64,7 +64,7 @@ class OpeningTimes {
     if (timeString === '00:00' || timeString === '23:59') {
       return 'midnight';
     }
-    const aDate = new Moment('2016-07-25T00:00:00+01:00');
+    const aDate = Moment('2016-07-25T00:00:00+01:00');
     const time = this._getTimeFromString(timeString);
     return this._getTime(aDate, time.hours, time.minutes).format(formatString);
   }
@@ -75,7 +75,7 @@ class OpeningTimes {
       // TODO: decide what to do if there is only >1 match
       const alterationMatch =
         Object.keys(alterations)
-          .filter(a => new Moment(a).tz(this._timeZone).isSame(moment, 'day'))[0];
+          .filter(a => Moment(a).tz(this._timeZone).isSame(moment, 'day'))[0];
       return alterationMatch ?
         alterations[alterationMatch] :
         this._openingTimes[this._getDayName(moment)];

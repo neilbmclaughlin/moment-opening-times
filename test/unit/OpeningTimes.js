@@ -6,7 +6,7 @@ const Moment = require('moment');
 require('moment-timezone');
 
 const expect = chai.expect;
-const aSunday = new Moment('2016-07-24T00:00:00+00:00');
+const aSunday = Moment('2016-07-24T00:00:00+00:00');
 
 chai.use(chaiMoment);
 chaiMoment.setErrorFormat('LLLL');
@@ -16,7 +16,7 @@ function getMoment(day, hours, minutes, timeZone) {
     .weekdays()
     .map(d => d.toLowerCase())
     .indexOf(day);
-  const moment = new Moment(aSunday).tz(timeZone);
+  const moment = Moment(aSunday).tz(timeZone);
   moment.add(dayNumber, 'days').hours(hours).minutes(minutes);
   return moment;
 }
@@ -413,7 +413,7 @@ describe('OpeningTimes', () => {
         });
         it('nextOpen should be start of mondays morning session', () => {
           const expectedOpeningDateTime =
-            new Moment(moment)
+            Moment(moment)
               .add(3, 'days')
               .hours(9)
               .minutes(0);
@@ -547,7 +547,7 @@ describe('OpeningTimes', () => {
           '2016-01-01': [],
           '2016-08-29': [],
         };
-        const moment = new Moment('2016-08-29T10:55:00+01:00');
+        const moment = Moment('2016-08-29T10:55:00+01:00');
         const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
         const status =
           openingTimes.getStatus(moment, { next: true });
@@ -555,7 +555,7 @@ describe('OpeningTimes', () => {
           expect(status.isOpen).to.equal(false);
         });
         it('nextOpen should be start of tomorrows session', () => {
-          momentsShouldBeSame(status.nextOpen, new Moment('2016-08-30T09:00:00+01:00'));
+          momentsShouldBeSame(status.nextOpen, Moment('2016-08-30T09:00:00+01:00'));
         });
         it('nextClosed should be passed moment', () => {
           momentsShouldBeSame(status.nextClosed, moment);
@@ -572,13 +572,13 @@ describe('OpeningTimes', () => {
         const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
 
         describe('moment during the alteration', () => {
-          const moment = new Moment('2016-08-29T12:30:00+01:00');
+          const moment = Moment('2016-08-29T12:30:00+01:00');
           const status = openingTimes.getStatus(moment, { next: true });
           it('isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
           it('nextClosed should be end of afternoon session', () => {
-            momentsShouldBeSame(status.nextClosed, new Moment('2016-08-29T16:30:00+01:00'));
+            momentsShouldBeSame(status.nextClosed, Moment('2016-08-29T16:30:00+01:00'));
           });
           it('nextOpen should be passed moment', () => {
             momentsShouldBeSame(status.nextOpen, moment);
@@ -586,13 +586,13 @@ describe('OpeningTimes', () => {
         });
 
         describe('moment after the alteration', () => {
-          const moment = new Moment('2016-08-29T16:35:00+01:00');
+          const moment = Moment('2016-08-29T16:35:00+01:00');
           const status = openingTimes.getStatus(moment, { next: true });
           it('isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
           it('nextOpen should be the start of tomorrows morning session', () => {
-            momentsShouldBeSame(status.nextOpen, new Moment('2016-08-30T09:00:00+01:00'));
+            momentsShouldBeSame(status.nextOpen, Moment('2016-08-30T09:00:00+01:00'));
           });
           it('nextClosed should be passed moment', () => {
             momentsShouldBeSame(status.nextClosed, moment);
@@ -600,13 +600,13 @@ describe('OpeningTimes', () => {
         });
 
         describe('moment before the alteration', () => {
-          const moment = new Moment('2016-08-29T10:55:00+01:00');
+          const moment = Moment('2016-08-29T10:55:00+01:00');
           const status = openingTimes.getStatus(moment, { next: true });
           it('isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
           it('nextOpen should be the start of the morning session', () => {
-            momentsShouldBeSame(status.nextOpen, new Moment('2016-08-29T11:00:00+01:00'));
+            momentsShouldBeSame(status.nextOpen, Moment('2016-08-29T11:00:00+01:00'));
           });
           it('nextClosed should be passed moment', () => {
             momentsShouldBeSame(status.nextClosed, moment);
@@ -624,13 +624,13 @@ describe('OpeningTimes', () => {
         const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
 
         describe('moment before midnight and during the alteration', () => {
-          const moment = new Moment('2016-08-29T11:30:00+01:00');
+          const moment = Moment('2016-08-29T11:30:00+01:00');
           const status = openingTimes.getStatus(moment, { next: true });
           it('isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
           it('nextClosed should be end of session', () => {
-            momentsShouldBeSame(status.nextClosed, new Moment('2016-08-30T01:30:00+01:00'));
+            momentsShouldBeSame(status.nextClosed, Moment('2016-08-30T01:30:00+01:00'));
           });
           it('nextOpen should be passed moment', () => {
             momentsShouldBeSame(status.nextOpen, moment);
@@ -638,13 +638,13 @@ describe('OpeningTimes', () => {
         });
 
         describe('moment after midnight and during the alteration', () => {
-          const moment = new Moment('2016-08-30T01:25:00+01:00');
+          const moment = Moment('2016-08-30T01:25:00+01:00');
           const status = openingTimes.getStatus(moment, { next: true });
           it('isOpen should be true', () => {
             expect(status.isOpen).to.equal(true);
           });
           it('nextClosed should be end of session', () => {
-            momentsShouldBeSame(status.nextClosed, new Moment('2016-08-30T01:30:00+01:00'));
+            momentsShouldBeSame(status.nextClosed, Moment('2016-08-30T01:30:00+01:00'));
           });
           it('nextOpen should be passed moment', () => {
             momentsShouldBeSame(status.nextOpen, moment);
@@ -652,13 +652,13 @@ describe('OpeningTimes', () => {
         });
 
         describe('moment after midnight and after the alteration', () => {
-          const moment = new Moment('2016-08-30T01:35:00+01:00');
+          const moment = Moment('2016-08-30T01:35:00+01:00');
           const status = openingTimes.getStatus(moment, { next: true });
           it('isOpen should be false', () => {
             expect(status.isOpen).to.equal(false);
           });
           it('nextOpen should be start of tomorrows session', () => {
-            momentsShouldBeSame(status.nextOpen, new Moment('2016-08-30T09:00:00+01:00'));
+            momentsShouldBeSame(status.nextOpen, Moment('2016-08-30T09:00:00+01:00'));
           });
           it('nextClosed should be passed moment', () => {
             momentsShouldBeSame(status.nextClosed, moment);

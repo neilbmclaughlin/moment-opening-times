@@ -22,7 +22,7 @@ describe('timings', function test() {
           const openingTimes =
             new OpeningTimes(o.openingTimes.general, timeZone);
           openingTimes.getStatus(
-            new Moment('2016-11-05T11:00:00').tz(timeZone), { next: true });
+            Moment('2016-11-05T11:00:00').tz(timeZone), { next: true });
         }
       });
     });
@@ -33,7 +33,7 @@ describe('timings', function test() {
           const openingTimes =
             new OpeningTimes(o.openingTimes.general, timeZone, o.openingTimes.alterations);
           openingTimes.getStatus(
-            new Moment('2016-11-05T11:00:00').tz(timeZone), { next: true });
+            Moment('2016-11-05T11:00:00').tz(timeZone), { next: true });
         }
       });
     });
