@@ -1,8 +1,6 @@
-const Moment = require('moment');
-
 function removePastAlterations(alterations, moment) {
   if (alterations) {
-    const todayInKeyFormat = Moment(moment).format('YYYY-MM-DD');
+    const todayInKeyFormat = moment.format('YYYY-MM-DD');
     const presentAndFutureAlterations = {};
     const alterationsKeys = Object.keys(alterations);
 

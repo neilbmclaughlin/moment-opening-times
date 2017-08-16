@@ -40,9 +40,10 @@ class OpeningTimes {
   }
 
   _getTimeFromString(timeString) {
+    const timeSplit = timeString.split(':');
     return {
-      hours: parseInt(timeString.split(':')[0], 10),
-      minutes: parseInt(timeString.split(':')[1], 10),
+      hours: parseInt(timeSplit[0], 10),
+      minutes: parseInt(timeSplit[1], 10),
     };
   }
 
@@ -68,21 +69,21 @@ class OpeningTimes {
     const alterations = removePastAlterations(this._alterations, moment);
     if (alterations) {
       // TODO: decide what to do if there is only >1 match
-      const alterationMatch =
-        Object.keys(alterations)
-          .filter(a => Moment(a).isSame(moment, 'day'))[0];
-      return alterationMatch ?
-        alterations[alterationMatch] :
+      const momentDate = moment.format('YYYY-MM-DD');
+      const todaysAlteration = Object.keys(alterations).find(a => a === momentDate);
+
+      return todaysAlteration ?
+        alterations[todaysAlteration] :
         this._openingTimes[this._getDayName(moment)];
     }
     return this._openingTimes[this._getDayName(moment)];
   }
 
   _getOpeningTimesSessionForMoment(moment, daysLookAhead) {
-    let returnValue;
     for (let day = daysLookAhead - 1; day >= -1; day -= 1) {
       const aMoment = moment.clone().add(day, 'day');
       const openingTimes = this._getOpeningTimesForDate(aMoment);
+
       for (let j = 0; j < openingTimes.length; j += 1) {
         const t = openingTimes[j];
         const from = this._createDateTime(aMoment, t.opens);
@@ -93,12 +94,11 @@ class OpeningTimes {
         }
 
         if (moment.isBetween(from, to, null, '[)')) {
-          returnValue = { from, to };
-          return returnValue;
+          return { from, to };
         }
       }
     }
-    return returnValue;
+    return undefined;
   }
 
   _getOpenSessions(moment, days) {
@@ -138,8 +138,7 @@ class OpeningTimes {
       .find(day => (day.some(this._getDateBeforeSessionFinder(moment))));
 
     if (nextDay) {
-      const nextSession = nextDay.find(this._getDateBeforeSessionFinder(moment));
-      return nextSession.from;
+      return nextDay.find(this._getDateBeforeSessionFinder(moment)).from;
     }
 
     return undefined;
