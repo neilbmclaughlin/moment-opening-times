@@ -53,7 +53,7 @@ class OpeningTimes {
 
   _createDateTime(moment, timeString) {
     const time = this._getTimeFromString(timeString);
-    return this._getTime(moment, time.hours, time.minutes).tz(this._timeZone);
+    return this._getTime(moment, time.hours, time.minutes);
   }
 
   _isClosedAllDay(daysOpeningTimes) {
@@ -64,18 +64,18 @@ class OpeningTimes {
     if (timeString === '00:00' || timeString === '23:59') {
       return 'midnight';
     }
-    const aDate = Moment('2016-07-25T00:00:00+01:00');
+    const aDate = Moment(Date.now());
     const time = this._getTimeFromString(timeString);
     return this._getTime(aDate, time.hours, time.minutes).format(formatString);
   }
 
   _getOpeningTimesForDate(moment) {
-    const alterations = removePastAlterations(this._alterations, moment, this._timeZone);
+    const alterations = removePastAlterations(this._alterations, moment);
     if (alterations) {
       // TODO: decide what to do if there is only >1 match
       const alterationMatch =
         Object.keys(alterations)
-          .filter(a => Moment(a).tz(this._timeZone).isSame(moment, 'day'))[0];
+          .filter(a => Moment(a).isSame(moment, 'day'))[0];
       return alterationMatch ?
         alterations[alterationMatch] :
         this._openingTimes[this._getDayName(moment)];
@@ -144,7 +144,7 @@ class OpeningTimes {
 
     if (nextDay) {
       const nextSession = nextDay.find(this._getDateBeforeSessionFinder(moment));
-      return nextSession.from.tz(this._timeZone);
+      return nextSession.from;
     }
 
     return undefined;

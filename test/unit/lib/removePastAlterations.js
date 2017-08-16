@@ -4,7 +4,6 @@ const removePastAlterations = require('../../../src/lib/removePastAlterations');
 const testUtils = require('../../lib/utils');
 
 const expect = chai.expect;
-const timeZone = 'Europe/London';
 const now = moment();
 
 describe('Utils', () => {
@@ -16,7 +15,7 @@ describe('Utils', () => {
     it('should remove alterations in the past', () => {
       const alterationsPast = testUtils.alterationsPast(now);
 
-      const strippedAlterations = removePastAlterations(alterationsPast, now, timeZone);
+      const strippedAlterations = removePastAlterations(alterationsPast, now);
 
       // eslint-disable-next-line no-unused-expressions
       expect(strippedAlterations).to.be.empty;
@@ -25,7 +24,7 @@ describe('Utils', () => {
     it('should not remove alterations in the future', () => {
       const alterationsFuture = testUtils.alterationsFuture(now);
 
-      const strippedAlterations = removePastAlterations(alterationsFuture, now, timeZone);
+      const strippedAlterations = removePastAlterations(alterationsFuture, now);
 
       expect(strippedAlterations).to.be.eql(alterationsFuture);
     });
@@ -33,7 +32,7 @@ describe('Utils', () => {
     it('should not remove alterations for present', () => {
       const alterationsPresent = testUtils.alterationsPresent(now);
 
-      const strippedAlterations = removePastAlterations(alterationsPresent, now, timeZone);
+      const strippedAlterations = removePastAlterations(alterationsPresent, now);
 
       expect(strippedAlterations).to.be.eql(alterationsPresent);
     });
@@ -43,7 +42,7 @@ describe('Utils', () => {
       const alterationsPresentAndFuture = testUtils.alterationsPresentAndFuture(now);
 
       const strippedAlterations =
-        removePastAlterations(alterationsPastPresentAndFuture, now, timeZone);
+        removePastAlterations(alterationsPastPresentAndFuture, now);
 
       expect(strippedAlterations).to.be.eql(alterationsPresentAndFuture);
     });
