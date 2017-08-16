@@ -34,12 +34,7 @@ class OpeningTimes {
 
   _getTime(moment, hour, minute) {
     const returnDate = moment.clone().tz(this._timeZone);
-    returnDate.set({
-      hour,
-      minute,
-      second: 0,
-      millisecond: 0,
-    });
+    returnDate.startOf('hour').hour(hour).minute(minute);
 
     return returnDate;
   }
@@ -64,7 +59,7 @@ class OpeningTimes {
     if (timeString === '00:00' || timeString === '23:59') {
       return 'midnight';
     }
-    const aDate = Moment(Date.now());
+    const aDate = Moment();
     const time = this._getTimeFromString(timeString);
     return this._getTime(aDate, time.hours, time.minutes).format(formatString);
   }
