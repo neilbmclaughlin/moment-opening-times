@@ -23,7 +23,7 @@
     "chai-moment": "^0.1.0",
     "coveralls": "^2.11.12",
     "eslint": "^4.1.1",
-    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-config-airbnb-base": "^12.0.0",
     "eslint-config-nhsuk": "^0.3.0",
     "eslint-plugin-import": "^2.6.1",
     "eslint-plugin-json": "^1.2.0",
