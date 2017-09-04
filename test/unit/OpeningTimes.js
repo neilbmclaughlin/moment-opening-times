@@ -90,7 +90,8 @@ describe('OpeningTimes', () => {
         expect(() => { new OpeningTimes(); })
           .to.throw(
             AssertionError,
-            'parameter \'openingTimes\' undefined/empty');
+            'parameter \'openingTimes\' undefined/empty'
+          );
       });
 
       it('opening times should cover all days of the week', () => {
@@ -99,7 +100,8 @@ describe('OpeningTimes', () => {
         expect(() => { new OpeningTimes(openingTimesJson); })
           .to.throw(
             AssertionError,
-            'parameter \'openingTimes\' should have all days of the week (friday,saturday,sunday,thursday,tuesday,wednesday)');
+            'parameter \'openingTimes\' should have all days of the week (friday,saturday,sunday,thursday,tuesday,wednesday)'
+          );
       });
 
       it('opening times should have opening times for each day of the week', () => {
@@ -108,7 +110,8 @@ describe('OpeningTimes', () => {
         expect(() => { new OpeningTimes(openingTimesJson); })
           .to.throw(
             AssertionError,
-            'parameter \'openingTimes\' should define opening times for each day. ({ sunday: [],\n  monday: undefined,\n  tuesday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  wednesday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  thursday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  friday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  saturday: [ { opens: \'09:00\', closes: \'17:30\' } ] })');
+            'parameter \'openingTimes\' should define opening times for each day. ({ sunday: [],\n  monday: undefined,\n  tuesday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  wednesday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  thursday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  friday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  saturday: [ { opens: \'09:00\', closes: \'17:30\' } ] })'
+          );
       });
 
       it('time zone should be defined', () => {
@@ -116,7 +119,8 @@ describe('OpeningTimes', () => {
         expect(() => { new OpeningTimes(openingTimesJson); })
           .to.throw(
             AssertionError,
-            'parameter \'timeZone\' undefined/empty');
+            'parameter \'timeZone\' undefined/empty'
+          );
       });
 
       it('time zone should be valid', () => {
@@ -124,7 +128,8 @@ describe('OpeningTimes', () => {
         expect(() => { new OpeningTimes(openingTimesJson, 'blah'); })
           .to.throw(
             AssertionError,
-            'parameter \'timeZone\' not a valid timezone');
+            'parameter \'timeZone\' not a valid timezone'
+          );
       });
     });
     /* eslint-enable no-new, max-len */
@@ -425,11 +430,10 @@ describe('OpeningTimes', () => {
       });
 
       describe('closing time of midnight', () => {
-        const openingTimesJson = getRegularWorkingWeekWithCustomSession(
-          [
-            { opens: '09:00', closes: '17:30' },
-            { opens: '18:30', closes: '00:00' },
-          ]);
+        const openingTimesJson = getRegularWorkingWeekWithCustomSession([
+          { opens: '09:00', closes: '17:30' },
+          { opens: '18:30', closes: '00:00' },
+        ]);
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('monday', 21, 30, 'Europe/London');
         const status = openingTimes.getStatus(moment, { next: true });
@@ -446,9 +450,8 @@ describe('OpeningTimes', () => {
     });
 
     describe('opening times spanning midnight (09:00 - 12:00. 13:00 - 01:00)', () => {
-      const openingTimesJson = getRegularWorkingWeekWithCustomSession(
-        [{ opens: '09:00', closes: '12:00' },
-          { opens: '13:00', closes: '01:00' }]);
+      const openingTimesJson = getRegularWorkingWeekWithCustomSession([{ opens: '09:00', closes: '12:00' },
+        { opens: '13:00', closes: '01:00' }]);
       describe('moment after midnight but before closing', () => {
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('tuesday', 0, 55, 'Europe/London');

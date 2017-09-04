@@ -12,11 +12,13 @@ class OpeningTimes {
     const parameterWeek = Object.keys(openingTimes).sort();
     assert.deepEqual(
       parameterWeek, weekdays.sort(),
-      `parameter 'openingTimes' should have all days of the week (${parameterWeek})`);
+      `parameter 'openingTimes' should have all days of the week (${parameterWeek})`
+    );
     assert(
       weekdays.every(d => Array.isArray(openingTimes[d])),
       'parameter \'openingTimes\' should define opening times for each day.' +
-      ` (${util.inspect(openingTimes)})`);
+      ` (${util.inspect(openingTimes)})`
+    );
 
     assert(timeZone, 'parameter \'timeZone\' undefined/empty');
     assert(Moment.tz.zone(timeZone), 'parameter \'timeZone\' not a valid timezone');
@@ -181,8 +183,7 @@ class OpeningTimes {
         {
           opens: this._formatTime(t.opens, formatString),
           closes: this._formatTime(t.closes, formatString),
-        })
-      );
+        }));
     });
 
     return openingTimes;

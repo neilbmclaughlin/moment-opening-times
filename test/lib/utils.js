@@ -26,10 +26,12 @@ function alterationsPresentAndFuture(moment) {
 }
 
 function alterationsPastPresentAndFuture(moment) {
-  return Object.assign({},
+  return Object.assign(
+    {},
     alterationsPast(moment),
     alterationsPresent(moment),
-    alterationsFuture(moment));
+    alterationsFuture(moment)
+  );
 }
 
 module.exports = {
