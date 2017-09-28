@@ -731,9 +731,9 @@ eslint-config-airbnb-base@^12.0.0:
   dependencies:
     eslint-restricted-globals "^0.1.1"
 
-eslint-config-nhsuk@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-nhsuk/-/eslint-config-nhsuk-0.5.0.tgz#114b54a6364b758f15c9fc38229e8887f61e38d8"
+eslint-config-nhsuk@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-nhsuk/-/eslint-config-nhsuk-0.6.0.tgz#e128d6dcac61b58620904448c509b872409c598d"
   dependencies:
     eslint "^4.6.1"
     eslint-config-airbnb-base "^12.0.0"
