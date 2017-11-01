@@ -1,6 +1,6 @@
 {
   "name": "moment-opening-times",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "A small class to determine the status of a given moment in relation to a set of opening times",
   "repository": {
     "type": "git",
@@ -42,7 +42,6 @@
     "git-hook": "yarn lint && yarn coverage-generate && yarn coverage-check",
     "lint": "eslint --ext .js --max-warnings 0 .",
     "precommit": "yarn git-hook",
-    "prepublish": "yarn git-hook",
     "prepush": "yarn git-hook && yarn snyk test",
     "test": "TZ=GMT mocha --recursive test/unit",
     "test-ci": "yarn git-hook && yarn coverage-upload",
