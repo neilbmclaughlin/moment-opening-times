@@ -1,3 +1,7 @@
+2.5.1 / 2017-11-01
+==================
+- Remove prepublish script
+
 2.5.0 / 2017-11-01
 ==================
 - Update npm dependencies
