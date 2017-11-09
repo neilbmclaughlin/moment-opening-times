@@ -1,3 +1,7 @@
+2.6.0 / 2017-11-01
+==================
+- Add grace period to consider a place open if opening in a few minutes.
+
 2.5.1 / 2017-11-01
 ==================
 - Remove prepublish script
