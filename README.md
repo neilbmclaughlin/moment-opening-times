@@ -28,9 +28,13 @@ All peerDependencies need to be installed.
 
 ## Usage
 
-The class is instantiated with 3 arguments. The third argument is optional and
-represents a set of opening times classified as alterations. Once instantiated
-the function `getStatus` is passed the current time and an optional options object.
+The class is instantiated with 4 arguments.
+The third argument represents a set of opening times classified as alterations. 
+The fourth argument is optional and represents a grace period before a place's opening time when
+it is considered open, i.e. if the grace period is 1 minute, a place will be reported as open at
+8:59 if it opens at 9am.
+
+Once instantiated the function `getStatus` is passed the current time and an optional options object.
 Currently the only valid option is a boolean field - `next`. When
 `next` set to a truthy value the returned object will contain 2 additional
 fields, `nextClosed` and `nextOpen`. Both fields are a

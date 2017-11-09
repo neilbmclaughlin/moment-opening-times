@@ -7,6 +7,7 @@ require('moment-timezone');
 
 const expect = chai.expect;
 const aSunday = Moment('2016-07-24T00:00:00+00:00');
+const gracePeriodMinutes = 1;
 
 chai.use(chaiMoment);
 chaiMoment.setErrorFormat('LLLL');
@@ -79,7 +80,7 @@ function momentsShouldBeSame(moment1, moment2) {
 }
 
 function getNewOpeningTimes(openingTimes, timeZone, alterations) {
-  return new OpeningTimes(openingTimes, timeZone, alterations);
+  return new OpeningTimes(openingTimes, timeZone, alterations, gracePeriodMinutes);
 }
 
 describe('OpeningTimes', () => {
@@ -193,8 +194,8 @@ describe('OpeningTimes', () => {
         });
       });
 
-      describe('moment 1 minute before session start', () => {
-        const moment = getMoment('monday', 8, 59, 'Europe/London');
+      describe('moment more that grace period minutes before session start should be closed', () => {
+        const moment = getMoment('monday', 8, 58, 'Europe/London');
         const status = openingTimes.getStatus(moment, { next: true });
         it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
@@ -204,6 +205,20 @@ describe('OpeningTimes', () => {
         });
         it('nextClosed should be passed moment', () => {
           momentsShouldBeSame(status.nextClosed, moment);
+        });
+      });
+
+      describe('moment less than grace period minutes before session start should be open', () => {
+        const moment = getMoment('monday', 8, 59, 'Europe/London');
+        const status = openingTimes.getStatus(moment, { next: true });
+        it('isOpen should be true', () => {
+          expect(status.isOpen).to.equal(true);
+        });
+        it('nextOpen should be passed moment', () => {
+          momentsShouldBeSame(status.nextOpen, moment);
+        });
+        it('nextClosed should be next closed', () => {
+          momentsShouldBeSame(status.nextClosed, getMoment('monday', 17, 30, 'Europe/London'));
         });
       });
 

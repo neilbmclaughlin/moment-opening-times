@@ -7,7 +7,8 @@ require('moment-timezone');
 const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
 
 class OpeningTimes {
-  constructor(openingTimes, timeZone, alterations) {
+  constructor(openingTimes, timeZone, alterations, gracePeriodMins = 0) {
+    this._gracePeriodMins = gracePeriodMins;
     assert(openingTimes, 'parameter \'openingTimes\' undefined/empty');
     const parameterWeek = Object.keys(openingTimes).sort();
     assert.deepEqual(
@@ -25,6 +26,7 @@ class OpeningTimes {
     this._openingTimes = openingTimes;
     this._timeZone = timeZone;
     this._alterations = alterations;
+    this._gracePeriodMins = gracePeriodMins;
   }
 
   /* Private methods - you could use them but they  are not part of the API
@@ -88,7 +90,8 @@ class OpeningTimes {
 
       for (let j = 0; j < openingTimes.length; j += 1) {
         const t = openingTimes[j];
-        const from = this._createDateTime(aMoment, t.opens);
+        // consider grace period minutes befor opening time open
+        const from = this._createDateTime(aMoment, t.opens).subtract(this._gracePeriodMins, 'minutes');
         const to = this._createDateTime(aMoment, t.closes);
 
         if (to < from) {
