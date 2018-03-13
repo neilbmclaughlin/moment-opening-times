@@ -1,6 +1,6 @@
 {
   "name": "moment-opening-times",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "A small class to determine the status of a given moment in relation to a set of opening times",
   "repository": {
     "type": "git",
