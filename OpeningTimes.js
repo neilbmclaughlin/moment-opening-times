@@ -181,8 +181,8 @@ class OpeningTimes {
       const day = d.toLowerCase();
       openingTimes[day] = this._openingTimes[day].map(t => (
         {
-          opens: this._formatTime(t.opens, formatString),
           closes: this._formatTime(t.closes, formatString),
+          opens: this._formatTime(t.opens, formatString),
         }));
     });
 

@@ -35,9 +35,9 @@ function alterationsPastPresentAndFuture(moment) {
 }
 
 module.exports = {
-  alterationsPast,
-  alterationsPresent,
   alterationsFuture,
-  alterationsPresentAndFuture,
+  alterationsPast,
   alterationsPastPresentAndFuture,
+  alterationsPresent,
+  alterationsPresentAndFuture,
 };
