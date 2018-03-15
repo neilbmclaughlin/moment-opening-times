@@ -26,13 +26,13 @@ function getClosedDay() {
 }
 
 function getSingleSessionDay() {
-  return [{ opens: '09:00', closes: '17:30' }];
+  return [{ closes: '17:30', opens: '09:00' }];
 }
 
 function getDoubleSessionDay() {
   return [
-    { opens: '09:00', closes: '12:30' },
-    { opens: '13:30', closes: '17:30' },
+    { closes: '12:30', opens: '09:00' },
+    { closes: '17:30', opens: '13:30' },
   ];
 }
 
@@ -110,7 +110,7 @@ describe('OpeningTimes', () => {
         expect(() => { new OpeningTimes(openingTimesJson); })
           .to.throw(
             AssertionError,
-            'parameter \'openingTimes\' should define opening times for each day. ({ sunday: [],\n  monday: undefined,\n  tuesday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  wednesday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  thursday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  friday: [ { opens: \'09:00\', closes: \'17:30\' } ],\n  saturday: [ { opens: \'09:00\', closes: \'17:30\' } ] })'
+            'parameter \'openingTimes\' should define opening times for each day. ({ sunday: [],\n  monday: undefined,\n  tuesday: [ { closes: \'17:30\', opens: \'09:00\' } ],\n  wednesday: [ { closes: \'17:30\', opens: \'09:00\' } ],\n  thursday: [ { closes: \'17:30\', opens: \'09:00\' } ],\n  friday: [ { closes: \'17:30\', opens: \'09:00\' } ],\n  saturday: [ { closes: \'17:30\', opens: \'09:00\' } ] })'
           );
       });
 
@@ -431,8 +431,8 @@ describe('OpeningTimes', () => {
 
       describe('closing time of midnight', () => {
         const openingTimesJson = getRegularWorkingWeekWithCustomSession([
-          { opens: '09:00', closes: '17:30' },
-          { opens: '18:30', closes: '00:00' },
+          { closes: '17:30', opens: '09:00' },
+          { closes: '00:00', opens: '18:30' },
         ]);
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('monday', 21, 30, 'Europe/London');
@@ -450,8 +450,8 @@ describe('OpeningTimes', () => {
     });
 
     describe('opening times spanning midnight (09:00 - 12:00. 13:00 - 01:00)', () => {
-      const openingTimesJson = getRegularWorkingWeekWithCustomSession([{ opens: '09:00', closes: '12:00' },
-        { opens: '13:00', closes: '01:00' }]);
+      const openingTimesJson = getRegularWorkingWeekWithCustomSession([{ closes: '12:00', opens: '09:00' },
+        { closes: '01:00', opens: '13:00' }]);
       describe('moment after midnight but before closing', () => {
         const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
         const moment = getMoment('tuesday', 0, 55, 'Europe/London');
@@ -569,7 +569,7 @@ describe('OpeningTimes', () => {
         const openingTimesJson = getRegularWorkingWeek();
         const alterations = {
           '2016-01-01': [],
-          '2016-08-29': [{ opens: '11:00', closes: '16:30' }],
+          '2016-08-29': [{ closes: '16:30', opens: '11:00' }],
         };
         const timeZone = 'Europe/London';
         const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
@@ -621,7 +621,7 @@ describe('OpeningTimes', () => {
         const openingTimesJson = getRegularWorkingWeek();
         const alterations = {
           '2016-01-01': [],
-          '2016-08-29': [{ opens: '07:00', closes: '01:30' }],
+          '2016-08-29': [{ closes: '01:30', opens: '07:00' }],
         };
         const timeZone = 'Europe/London';
         const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
@@ -674,9 +674,9 @@ describe('OpeningTimes', () => {
   describe('formatOpeningTimes()', () => {
     it('when passed the format string \'HH:mm\' times should be returned in that format', () => {
       const openingTimesJson = getRegularWorkingWeekWithCustomSession([
-        { opens: '09:00', closes: '12:30' },
-        { opens: '13:30', closes: '17:30' },
-        { opens: '18:30', closes: '00:00' },
+        { closes: '12:30', opens: '09:00' },
+        { closes: '17:30', opens: '13:30' },
+        { closes: '00:00', opens: '18:30' },
       ]);
       const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
       const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes('HH:mm');
@@ -690,9 +690,9 @@ describe('OpeningTimes', () => {
 
     it('by default times should be returned as am/pm', () => {
       const openingTimesJson = getRegularWorkingWeekWithCustomSession([
-        { opens: '09:00', closes: '12:30' },
-        { opens: '13:30', closes: '17:30' },
-        { opens: '18:30', closes: '00:00' },
+        { closes: '12:30', opens: '09:00' },
+        { closes: '17:30', opens: '13:30' },
+        { closes: '00:00', opens: '18:30' },
       ]);
       const openingTimes = getNewOpeningTimes(openingTimesJson, 'Europe/London');
       const formattedOpeningTimes = openingTimes.getFormattedOpeningTimes();
