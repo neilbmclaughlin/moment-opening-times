@@ -1,8 +1,7 @@
 const assert = require('assert');
 const util = require('util');
-const Moment = require('moment');
+const Moment = require('moment-timezone');
 const removePastAlterations = require('./src/lib/removePastAlterations');
-require('moment-timezone');
 
 const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
 
