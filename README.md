@@ -5,7 +5,6 @@
 [![Greenkeeper badge](https://badges.greenkeeper.io/nhsuk/moment-opening-times.svg)](https://greenkeeper.io/)
 [![Build Status](https://travis-ci.org/nhsuk/moment-opening-times.svg?branch=master)](https://travis-ci.org/nhsuk/moment-opening-times)
 [![Coverage Status](https://coveralls.io/repos/github/nhsuk/moment-opening-times/badge.svg?branch=master)](https://coveralls.io/github/nhsuk/moment-opening-times?branch=master)
-[![Known Vulnerabilities](https://snyk.io/test/github/nhsuk/moment-opening-times/badge.svg)](https://snyk.io/test/github/nhsuk/moment-opening-times)
 
 > Given a set of opening times (with optional alternative opening times) return a status indicating openness.
 
