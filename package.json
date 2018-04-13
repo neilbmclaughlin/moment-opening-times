@@ -1,6 +1,6 @@
 {
   "name": "moment-opening-times",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "description": "A small class to determine the status of a given moment in relation to a set of opening times",
   "repository": {
     "type": "git",
@@ -32,8 +32,7 @@
     "husky": "^0.14.0",
     "istanbul": "^0.4.0",
     "mocha": "^5.0.0",
-    "mocha-lcov-reporter": "^1.0.0",
-    "snyk": "^1.0.0"
+    "mocha-lcov-reporter": "^1.0.0"
   },
   "scripts": {
     "coverage-check": "istanbul check-coverage --config .istanbul.yml",
@@ -42,7 +41,7 @@
     "git-hook": "yarn lint && yarn coverage-generate && yarn coverage-check",
     "lint": "eslint --ext .js --max-warnings 0 .",
     "precommit": "yarn git-hook",
-    "prepush": "yarn git-hook && yarn snyk test",
+    "prepush": "yarn git-hook",
     "test": "TZ=GMT mocha --recursive test/unit",
     "test-ci": "yarn git-hook && yarn coverage-upload",
     "test-watch": "yarn test -- --watch --reporter min"
