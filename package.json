@@ -24,7 +24,7 @@
     "chai-moment": "^0.1.0",
     "coveralls": "^3.0.0",
     "eslint": "^4.0.0",
-    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.0.0",
     "eslint-plugin-json": "^1.0.0",
     "eslint-plugin-mocha": "^5.0.0",
