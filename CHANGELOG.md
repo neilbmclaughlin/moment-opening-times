@@ -3,6 +3,7 @@
 - Update npm dependencies
 - Upgrade to latest `eslint` versions and fix errors
 - Use latest Husky hooks pattern
+- Replace `istanbul` with `nyc` for code coverage
 
 2.9.0 / 2018-04-13
 ==================
