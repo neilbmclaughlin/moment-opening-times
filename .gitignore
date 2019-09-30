@@ -4,6 +4,7 @@ coverage/
 
 .sass-cache
 npm-debug.log
+yarn-error.log
 .env
 .DS_Store
 .coveralls.yml
