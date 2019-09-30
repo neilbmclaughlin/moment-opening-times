@@ -4,6 +4,8 @@
 - Upgrade to latest `eslint` versions and fix errors
 - Use latest Husky hooks pattern
 - Replace `istanbul` with `nyc` for code coverage
+- Update Travis CI to use specific version of node
+- Greenkeeper script runs are not required on Travis
 
 2.9.0 / 2018-04-13
 ==================
