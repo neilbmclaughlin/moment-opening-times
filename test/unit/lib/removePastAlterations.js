@@ -1,5 +1,5 @@
 const chai = require('chai');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const removePastAlterations = require('../../../src/lib/removePastAlterations');
 const testUtils = require('../../lib/utils');
 
