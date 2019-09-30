@@ -2,6 +2,7 @@
 ===================
 - Update npm dependencies
 - Upgrade to latest `eslint` versions and fix errors
+- Use latest Husky hooks pattern
 
 2.9.0 / 2018-04-13
 ==================

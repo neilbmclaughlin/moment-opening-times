@@ -40,11 +40,15 @@
     "coverage-upload": "cat ./coverage/lcov.info | coveralls",
     "git-hook": "yarn lint && yarn coverage-generate && yarn coverage-check",
     "lint": "eslint --ext .js --max-warnings 0 .",
-    "precommit": "yarn git-hook",
-    "prepush": "yarn git-hook",
     "test": "TZ=GMT mocha --recursive test/unit",
     "test-ci": "yarn git-hook && yarn coverage-upload",
     "test-watch": "yarn test -- --watch --reporter min"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn git-hook",
+      "pre-push": "yarn git-hook"
+    }
   },
   "keywords": [
     "moment",
