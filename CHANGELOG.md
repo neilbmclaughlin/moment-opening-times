@@ -1,3 +1,8 @@
+2.10.0 / 2019-09-30
+===================
+- Update npm dependencies
+- Upgrade to latest `eslint` versions and fix errors
+
 2.9.0 / 2018-04-13
 ==================
 - Update npm dependencies

@@ -22,12 +22,11 @@ function alterationsFuture(moment) {
 }
 
 function alterationsPresentAndFuture(moment) {
-  return Object.assign({}, alterationsPresent(moment), alterationsFuture(moment));
+  return Object.assign(alterationsPresent(moment), alterationsFuture(moment));
 }
 
 function alterationsPastPresentAndFuture(moment) {
   return Object.assign(
-    {},
     alterationsPast(moment),
     alterationsPresent(moment),
     alterationsFuture(moment)
