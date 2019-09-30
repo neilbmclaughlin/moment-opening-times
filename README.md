@@ -3,7 +3,7 @@
 [![GitHub Release](https://img.shields.io/github/release/nhsuk/moment-opening-times.svg)](https://github.com/nhsuk/moment-opening-times/releases/latest/)
 [![npm version](https://badge.fury.io/js/moment-opening-times.svg)](https://badge.fury.io/js/moment-opening-times)
 [![Greenkeeper badge](https://badges.greenkeeper.io/nhsuk/moment-opening-times.svg)](https://greenkeeper.io/)
-[![Build Status](https://travis-ci.org/nhsuk/moment-opening-times.svg?branch=master)](https://travis-ci.org/nhsuk/moment-opening-times)
+[![Build Status](https://github.com/nhsuk/moment-opening-times/workflows/CI/badge.svg)](https://github.com/nhsuk/moment-opening-times/actions)
 [![Coverage Status](https://coveralls.io/repos/github/nhsuk/moment-opening-times/badge.svg?branch=master)](https://coveralls.io/github/nhsuk/moment-opening-times?branch=master)
 
 > Given a set of opening times (with optional alternative opening times) return a status indicating openness.

@@ -1,8 +1,8 @@
+const AssertionError = require('assert').AssertionError;
 const chai = require('chai');
 const chaiMoment = require('chai-moment');
-const AssertionError = require('assert').AssertionError;
-const OpeningTimes = require('../../OpeningTimes');
 const Moment = require('moment');
+const OpeningTimes = require('../../OpeningTimes');
 require('moment-timezone');
 
 const expect = chai.expect;
@@ -14,7 +14,7 @@ chaiMoment.setErrorFormat('LLLL');
 function getMoment(day, hours, minutes, timeZone) {
   const dayNumber = Moment
     .weekdays()
-    .map(d => d.toLowerCase())
+    .map((d) => d.toLowerCase())
     .indexOf(day);
   const moment = Moment(aSunday).tz(timeZone);
   moment.add(dayNumber, 'days').hours(hours).minutes(minutes);
@@ -417,11 +417,10 @@ describe('OpeningTimes', () => {
           expect(status.isOpen).to.equal(false);
         });
         it('nextOpen should be start of mondays morning session', () => {
-          const expectedOpeningDateTime =
-            Moment(moment)
-              .add(3, 'days')
-              .hours(9)
-              .minutes(0);
+          const expectedOpeningDateTime = Moment(moment)
+            .add(3, 'days')
+            .hours(9)
+            .minutes(0);
           momentsShouldBeSame(status.nextOpen, expectedOpeningDateTime);
         });
         it('nextClosed should be passed moment', () => {
@@ -552,8 +551,7 @@ describe('OpeningTimes', () => {
         };
         const moment = Moment('2016-08-29T10:55:00+01:00');
         const openingTimes = getNewOpeningTimes(openingTimesJson, timeZone, alterations);
-        const status =
-          openingTimes.getStatus(moment, { next: true });
+        const status = openingTimes.getStatus(moment, { next: true });
         it('isOpen should be false', () => {
           expect(status.isOpen).to.equal(false);
         });

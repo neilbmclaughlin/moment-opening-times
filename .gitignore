@@ -1,9 +1,12 @@
 node_modules/
 public/components
 coverage/
+.nyc_output/
+test-results.xml
 
 .sass-cache
 npm-debug.log
+yarn-error.log
 .env
 .DS_Store
 .coveralls.yml

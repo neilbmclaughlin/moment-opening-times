@@ -41,8 +41,7 @@ describe('Utils', () => {
       const alterationsPastPresentAndFuture = testUtils.alterationsPastPresentAndFuture(now);
       const alterationsPresentAndFuture = testUtils.alterationsPresentAndFuture(now);
 
-      const strippedAlterations =
-        removePastAlterations(alterationsPastPresentAndFuture, now);
+      const strippedAlterations = removePastAlterations(alterationsPastPresentAndFuture, now);
 
       expect(strippedAlterations).to.be.eql(alterationsPresentAndFuture);
     });

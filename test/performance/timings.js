@@ -1,8 +1,8 @@
 const orgLimit = 1000;
 
+const Moment = require('moment');
 const OpeningTimes = require('../../OpeningTimes');
 const orgs = require('../resources/pharmacy-list').slice(0, orgLimit);
-const Moment = require('moment');
 
 const timeZone = 'Europe/London';
 
@@ -19,8 +19,7 @@ describe('timings', function test() {
     it('disregarding alterations', () => {
       orgs.forEach((o) => {
         if (o.openingTimes) {
-          const openingTimes =
-            new OpeningTimes(o.openingTimes.general, timeZone);
+          const openingTimes = new OpeningTimes(o.openingTimes.general, timeZone);
           openingTimes.getStatus(Moment('2016-11-05T11:00:00').tz(timeZone), { next: true });
         }
       });
@@ -29,8 +28,9 @@ describe('timings', function test() {
     it('including alterations', () => {
       orgs.forEach((o) => {
         if (o.openingTimes) {
-          const openingTimes =
-            new OpeningTimes(o.openingTimes.general, timeZone, o.openingTimes.alterations);
+          const openingTimes = new OpeningTimes(
+            o.openingTimes.general, timeZone, o.openingTimes.alterations
+          );
           openingTimes.getStatus(Moment('2016-11-05T11:00:00').tz(timeZone), { next: true });
         }
       });

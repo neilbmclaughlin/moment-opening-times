@@ -1,3 +1,12 @@
+2.10.0 / 2019-09-30
+===================
+- Update npm dependencies
+- Upgrade to latest `eslint` versions and fix errors
+- Use latest Husky hooks pattern
+- Replace `istanbul` with `nyc` for code coverage
+- Use ADRs to record architectural decisions
+- Replace Travis CI with GitHub Actions
+
 2.9.0 / 2018-04-13
 ==================
 - Update npm dependencies

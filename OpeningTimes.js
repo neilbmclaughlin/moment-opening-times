@@ -4,7 +4,7 @@ const Moment = require('moment');
 const removePastAlterations = require('./src/lib/removePastAlterations');
 require('moment-timezone');
 
-const weekdays = require('moment').weekdays().map(d => d.toLowerCase());
+const weekdays = Moment.weekdays().map((d) => d.toLowerCase());
 
 class OpeningTimes {
   constructor(openingTimes, timeZone, alterations) {
@@ -15,9 +15,9 @@ class OpeningTimes {
       `parameter 'openingTimes' should have all days of the week (${parameterWeek})`
     );
     assert(
-      weekdays.every(d => Array.isArray(openingTimes[d])),
-      'parameter \'openingTimes\' should define opening times for each day.' +
-      ` (${util.inspect(openingTimes)})`
+      weekdays.every((d) => Array.isArray(openingTimes[d])),
+      'parameter \'openingTimes\' should define opening times for each day.'
+      + ` (${util.inspect(openingTimes)})`
     );
 
     assert(timeZone, 'parameter \'timeZone\' undefined/empty');
@@ -72,11 +72,11 @@ class OpeningTimes {
     if (alterations) {
       // TODO: decide what to do if there is only >1 match
       const momentDate = moment.format('YYYY-MM-DD');
-      const todaysAlteration = Object.keys(alterations).find(a => a === momentDate);
+      const todaysAlteration = Object.keys(alterations).find((a) => a === momentDate);
 
-      return todaysAlteration ?
-        alterations[todaysAlteration] :
-        this._openingTimes[this._getDayName(moment)];
+      return todaysAlteration
+        ? alterations[todaysAlteration]
+        : this._openingTimes[this._getDayName(moment)];
     }
     return this._openingTimes[this._getDayName(moment)];
   }
@@ -123,21 +123,21 @@ class OpeningTimes {
   }
 
   _getDateInSessionFinder(moment) {
-    return session => (moment.isBetween(session.from, session.to, null, '[)'));
+    return (session) => (moment.isBetween(session.from, session.to, null, '[)'));
   }
 
   _getDateBeforeSessionFinder(moment) {
-    return session => (moment.isBefore(session.from));
+    return (session) => (moment.isBefore(session.from));
   }
 
   _findMomentInSessions(moment, sessions) {
-    return sessions.some(day => (day.some(this._getDateInSessionFinder(moment))));
+    return sessions.some((day) => (day.some(this._getDateInSessionFinder(moment))));
   }
 
   _findNextOpeningTime(moment, sessions) {
     const nextDay = sessions
-      .filter(day => (!this._isClosedAllDay(day)))
-      .find(day => (day.some(this._getDateBeforeSessionFinder(moment))));
+      .filter((day) => (!this._isClosedAllDay(day)))
+      .find((day) => (day.some(this._getDateBeforeSessionFinder(moment))));
 
     if (nextDay) {
       return nextDay.find(this._getDateBeforeSessionFinder(moment)).from;
@@ -179,7 +179,7 @@ class OpeningTimes {
 
     Moment.weekdays().forEach((d) => {
       const day = d.toLowerCase();
-      openingTimes[day] = this._openingTimes[day].map(t => (
+      openingTimes[day] = this._openingTimes[day].map((t) => (
         {
           closes: this._formatTime(t.closes, formatString),
           opens: this._formatTime(t.opens, formatString),
