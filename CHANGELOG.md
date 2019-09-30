@@ -6,6 +6,8 @@
 - Replace `istanbul` with `nyc` for code coverage
 - Use ADRs to record architectural decisions
 - Replace Travis CI with GitHub Actions
+- Remove `coveralls`
+- Remove `moment` (it is included in `moment-timezone`)
 
 2.9.0 / 2018-04-13
 ==================

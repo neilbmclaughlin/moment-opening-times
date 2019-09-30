@@ -1,9 +1,8 @@
 const AssertionError = require('assert').AssertionError;
 const chai = require('chai');
 const chaiMoment = require('chai-moment');
-const Moment = require('moment');
+const Moment = require('moment-timezone');
 const OpeningTimes = require('../../OpeningTimes');
-require('moment-timezone');
 
 const expect = chai.expect;
 const aSunday = Moment('2016-07-24T00:00:00+00:00');
