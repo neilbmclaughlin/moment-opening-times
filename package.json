@@ -21,7 +21,6 @@
   "devDependencies": {
     "chai": "^4.0.0",
     "chai-moment": "^0.1.0",
-    "coveralls": "^3.0.0",
     "eslint": "^6.0.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-nhsuk": "^0.21.0",
@@ -35,7 +34,6 @@
     "nyc": "^14.1.1"
   },
   "scripts": {
-    "coverage-upload": "cat ./coverage/lcov.info | coveralls",
     "git-hook": "yarn lint && yarn test",
     "lint": "eslint --ext .js --max-warnings 0 .",
     "lint-watch": "esw --watch .",
