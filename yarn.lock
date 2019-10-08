@@ -573,10 +573,10 @@ eslint-config-airbnb-base@^14.0.0:
     object.assign "^4.1.0"
     object.entries "^1.1.0"
 
-eslint-config-nhsuk@^0.21.0:
-  version "0.21.1"
-  resolved "https://registry.yarnpkg.com/eslint-config-nhsuk/-/eslint-config-nhsuk-0.21.1.tgz#c2f0c9ef12bd6b651c0090edfe0f0a32fb90d494"
-  integrity sha512-3OEsHZz42LK6R00u/c6wthjCLqb6yonmSkZtRWeTVNr2WUH3zPGo6YuOFFst2YNLWmJd04ULiTM/++RH+VZRRg==
+eslint-config-nhsuk@^0.22.0:
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-nhsuk/-/eslint-config-nhsuk-0.22.0.tgz#09789a3eaa28f84e0c624b9cbd0d80979f91edae"
+  integrity sha512-41/X6pmVWWMnx76rOx3QhOmp0oTBHw2bOosMEaTm+8KMONK/9DsiC8Uzid/FwyGh7aQGti17QZLFGA0J3srgiw==
   dependencies:
     eslint "^6.0.0"
     eslint-config-airbnb-base "^14.0.0"
